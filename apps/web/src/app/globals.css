@@ -1,0 +1,106 @@
+@import 'tailwindcss';
+
+/* Design tokens. Components use these names, never raw colours,
+   so dark mode and a later brand change touch only this file. */
+:root {
+  --background: oklch(0.985 0.002 260);
+  --foreground: oklch(0.21 0.02 265);
+  --card: oklch(1 0 0);
+  --muted: oklch(0.96 0.005 260);
+  --muted-foreground: oklch(0.52 0.02 260);
+  --border: oklch(0.91 0.008 260);
+  --primary: oklch(0.52 0.22 275);
+  --primary-foreground: oklch(0.99 0 0);
+  --success: oklch(0.6 0.15 155);
+  --warning: oklch(0.72 0.15 75);
+  --danger: oklch(0.58 0.21 25);
+  --radius: 0.625rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(0.17 0.01 265);
+    --foreground: oklch(0.95 0.005 260);
+    --card: oklch(0.21 0.012 265);
+    --muted: oklch(0.25 0.012 265);
+    --muted-foreground: oklch(0.7 0.015 260);
+    --border: oklch(0.3 0.012 265);
+    --primary: oklch(0.66 0.19 275);
+    --primary-foreground: oklch(0.15 0.01 265);
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --radius-lg: var(--radius);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* ui-sdk toasts stack using variables the region sets (see the Toast docs, "Styling"). */
+[data-slot='toast-region'] {
+  height: var(--toast-front-height);
+}
+
+[data-slot='toast-region'][data-expanded] {
+  height: calc(var(--toast-stack-height) + (var(--toast-count) - 1) * 12px);
+}
+
+[data-slot='toast'] {
+  --y: calc(var(--toast-index) * -12px);
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: calc(100 - var(--toast-index));
+  overflow: hidden;
+  height: var(--toast-height);
+  translate: var(--toast-swipe-x, 0px) calc(var(--y) + var(--toast-swipe-y, 0px));
+  scale: calc(1 - var(--toast-index) * 0.05);
+  transition-property: translate, scale, opacity, height;
+  transition-duration: 400ms;
+  user-select: none;
+}
+
+[data-slot='toast']:not([data-front], [data-expanded]) {
+  height: var(--toast-front-height);
+}
+
+[data-slot='toast'][data-expanded] {
+  --y: calc(-1 * (var(--toast-offset) + var(--toast-index) * 12px));
+  scale: 1;
+}
+
+[data-slot='toast'][data-starting-style] {
+  transition: none;
+}
+
+[data-slot='toast'][data-starting-style][data-front] {
+  --y: 100%;
+}
+
+[data-slot='toast']:is([data-starting-style]:not([data-front]), [data-ending-style]) {
+  opacity: 0;
+}
+
+[data-slot='toast'][data-swiping] {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot='toast'] {
+    transition-property: opacity;
+  }
+}

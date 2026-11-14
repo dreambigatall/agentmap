@@ -1,0 +1,149 @@
+// Database schema for Skillflow.
+// PostgreSQL hosted on Supabase, used as plain Postgres.
+//
+// All tables live in the "app" schema, set by ?schema=app in the connection strings.
+// Supabase publishes the "public" schema through its REST API to anyone holding the
+// project's anon key, so nothing of ours goes there.
+//
+// Tables are added phase by phase; see the Build plan, section 4.
+// Naming: models are PascalCase in code, tables and columns snake_case in Postgres.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------------------------------------------------------------- Phase 1: core
+
+/// What a member may do in a workspace. Order matters: reviewer < editor < admin < owner.
+enum MemberLevel {
+  reviewer
+  editor
+  admin
+  owner
+
+  @@map("member_level")
+}
+
+enum AuthTokenType {
+  email_verification
+  password_reset
+
+  @@map("auth_token_type")
+}
+
+model User {
+  id              String    @id @default(uuid()) @db.Uuid
+  /// Stored lower-case and trimmed; unique across the product.
+  email           String    @unique
+  name            String
+  /// Empty for accounts that only sign in with Google.
+  passwordHash    String?   @map("password_hash")
+  emailVerifiedAt DateTime? @map("email_verified_at") @db.Timestamptz(3)
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  memberships   Membership[]
+  refreshTokens RefreshToken[]
+  authTokens    AuthToken[]
+  invitesSent   Invite[]       @relation("InvitedBy")
+
+  @@map("users")
+}
+
+/// One row per issued refresh token. Tokens rotate on every use; all tokens from one
+/// sign-in share a family, and reuse of a spent token revokes the whole family.
+model RefreshToken {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  familyId   String    @map("family_id") @db.Uuid
+  /// SHA-256 of the token; the token itself is never stored.
+  tokenHash  String    @unique @map("token_hash")
+  expiresAt  DateTime  @map("expires_at") @db.Timestamptz(3)
+  usedAt     DateTime? @map("used_at") @db.Timestamptz(3)
+  revokedAt  DateTime? @map("revoked_at") @db.Timestamptz(3)
+  userAgent  String?   @map("user_agent")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+  @@map("refresh_tokens")
+}
+
+/// Single-use links sent by email: verify an address, reset a password.
+model AuthToken {
+  id        String        @id @default(uuid()) @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
+  type      AuthTokenType
+  tokenHash String        @unique @map("token_hash")
+  expiresAt DateTime      @map("expires_at") @db.Timestamptz(3)
+  usedAt    DateTime?     @map("used_at") @db.Timestamptz(3)
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+  @@map("auth_tokens")
+}
+
+model Workspace {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  /// Used in web addresses: /w/<slug>/...
+  slug      String   @unique
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  memberships Membership[]
+  invites     Invite[]
+
+  @@map("workspaces")
+}
+
+/// A person's place in a workspace. Exactly one owner per workspace is enforced by a
+/// partial unique index written by hand in the first migration.
+model Membership {
+  id          String      @id @default(uuid()) @db.Uuid
+  workspaceId String      @map("workspace_id") @db.Uuid
+  userId      String      @map("user_id") @db.Uuid
+  level       MemberLevel
+  lastSeenAt  DateTime?   @map("last_seen_at") @db.Timestamptz(3)
+  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+  @@map("memberships")
+}
+
+model Invite {
+  id          String      @id @default(uuid()) @db.Uuid
+  workspaceId String      @map("workspace_id") @db.Uuid
+  /// Stored lower-case and trimmed.
+  email       String
+  level       MemberLevel
+  tokenHash   String      @unique @map("token_hash")
+  invitedById String      @map("invited_by_id") @db.Uuid
+  expiresAt   DateTime    @map("expires_at") @db.Timestamptz(3)
+  acceptedAt  DateTime?   @map("accepted_at") @db.Timestamptz(3)
+  revokedAt   DateTime?   @map("revoked_at") @db.Timestamptz(3)
+  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  invitedBy User      @relation("InvitedBy", fields: [invitedById], references: [id])
+
+  @@index([workspaceId])
+  @@index([email])
+  @@map("invites")
+}

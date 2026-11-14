@@ -1,0 +1,21 @@
+node_modules/
+dist/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# Environment files hold secrets and connection strings
+.env
+.env.*
+!.env.example
+*.local.md
+.env.backup
+
+# Generated
+apps/api/openapi.json
+next-env.d.ts
+
+.DS_Store
+Thumbs.db
+*.log

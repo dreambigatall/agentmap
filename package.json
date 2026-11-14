@@ -1,0 +1,23 @@
+{
+  "name": "skillflow",
+  "private": true,
+  "packageManager": "pnpm@12.8.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @skillflow/shared build && pnpm -r --parallel --filter @skillflow/api --filter @skillflow/web dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "format": "prettier --write .",
+    "db:migrate": "pnpm --filter @skillflow/api db:migrate",
+    "db:deploy": "pnpm --filter @skillflow/api db:deploy",
+    "db:studio": "pnpm --filter @skillflow/api db:studio",
+    "api:client": "pnpm --filter @skillflow/api openapi && pnpm --filter @skillflow/web api:client"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  }
+}
