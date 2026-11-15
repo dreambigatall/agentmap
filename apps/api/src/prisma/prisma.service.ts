@@ -1,8 +1,27 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 
+/**
+ * Limits for interactive transactions. Prisma's default closes a transaction after 5s,
+ * which a skill save (about ten round trips) can pass on a slow link to a hosted
+ * database. maxWait is how long to wait for a free connection first.
+ */
+export const TX_OPTIONS = { maxWait: 10_000, timeout: 30_000 } as const;
+
 /** Models that belong to a workspace. Every table added later with a workspace_id goes here. */
-const WORKSPACE_MODELS = new Set<string>([Prisma.ModelName.Membership, Prisma.ModelName.Invite]);
+const WORKSPACE_MODELS = new Set<string>([
+  Prisma.ModelName.Membership,
+  Prisma.ModelName.Invite,
+  Prisma.ModelName.Role,
+  Prisma.ModelName.Channel,
+  Prisma.ModelName.Agent,
+  Prisma.ModelName.Capability,
+  Prisma.ModelName.Skill,
+  Prisma.ModelName.SkillStep,
+  Prisma.ModelName.SkillInput,
+  Prisma.ModelName.SkillChannel,
+  Prisma.ModelName.SkillVersion,
+]);
 
 const FILTERED_OPERATIONS = new Set([
   'findUnique',

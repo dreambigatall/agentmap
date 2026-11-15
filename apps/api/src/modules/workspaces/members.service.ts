@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import type { ChangeLevelInput, Member } from '@skillflow/shared';
 import type { WorkspaceAccess } from '../../common/request';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService, TX_OPTIONS } from '../../prisma/prisma.service';
 
 @Injectable()
 export class MembersService {
@@ -62,7 +62,7 @@ export class MembersService {
       // Demote first: the database allows only one owner per workspace at any moment.
       await tx.membership.update({ where: { id: access.membershipId }, data: { level: 'admin' } });
       await tx.membership.update({ where: { id: target.id }, data: { level: 'owner' } });
-    });
+    }, TX_OPTIONS);
   }
 
   private async find(access: WorkspaceAccess, membershipId: string) {

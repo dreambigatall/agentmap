@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils';
 const controlClass =
   'h-9 w-full rounded-lg border border-border bg-card px-3 text-sm outline-none transition-colors ' +
   'placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 ' +
-  'data-invalid:border-danger read-only:bg-muted read-only:text-muted-foreground disabled:opacity-60';
+  'data-invalid:border-danger [&:read-only:not(button)]:bg-muted [&:read-only:not(button)]:text-muted-foreground disabled:opacity-60';
 
 const labelClass = 'block text-sm font-medium';
 

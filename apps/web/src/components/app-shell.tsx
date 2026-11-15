@@ -15,6 +15,7 @@ import {
   Menu,
   MenuGroup,
 } from '@/components/ui/menu';
+import { AgentsNav } from '@/features/agents/agents-nav';
 import { HealthStatus } from '@/features/health/health-status';
 import { api, call } from '@/lib/api/client';
 import { cn } from '@/lib/utils';
@@ -146,10 +147,7 @@ export function AppShell({
           <WorkspaceMenu me={me} workspace={workspace} />
         </div>
         <nav className="flex-1 space-y-6 p-3 text-sm" aria-label="Workspace">
-          <div>
-            <p className="mb-2 px-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">Agents</p>
-            <p className="px-2 py-1.5 text-muted-foreground">No agents yet</p>
-          </div>
+          <AgentsNav workspace={workspace} />
           <ul className="space-y-0.5">
             {nav.map((item) => (
               <li key={item.href}>{navLink(item)}</li>
@@ -177,6 +175,12 @@ export function AppShell({
           <nav className="flex gap-1 overflow-x-auto text-sm" aria-label="Workspace">
             {nav.map((item) => navLink(item, true))}
           </nav>
+          <details className="text-sm">
+            <summary className="cursor-pointer px-1 py-1 text-muted-foreground">Agents</summary>
+            <div className="pt-1">
+              <AgentsNav workspace={workspace} />
+            </div>
+          </details>
         </header>
         <main className="flex-1 p-4 md:p-8">{children}</main>
       </div>

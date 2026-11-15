@@ -6,7 +6,10 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { AuthGuard } from './common/auth.guard';
 import { ConfigModule } from './config/config.module';
 import { ENV, type Env } from './config/env';
+import { AgentsModule } from './modules/agents/agents.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { SettingsModule } from './modules/settings/settings.module';
+import { SkillsModule } from './modules/skills/skills.module';
 import { HealthModule } from './modules/health/health.module';
 import { MailModule } from './modules/mail/mail.module';
 import { WorkspacesModule } from './modules/workspaces/workspaces.module';
@@ -33,6 +36,9 @@ import { PrismaModule } from './prisma/prisma.module';
     HealthModule,
     AuthModule,
     WorkspacesModule,
+    SettingsModule,
+    AgentsModule,
+    SkillsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
