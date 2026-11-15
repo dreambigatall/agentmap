@@ -324,6 +324,278 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/w/{workspaceId}/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["RolesController_list"];
+        put?: never;
+        post: operations["RolesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/roles/{roleId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["RolesController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["RolesController_rename"];
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/channels": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ChannelsController_list"];
+        put?: never;
+        post: operations["ChannelsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/channels/{channelId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["ChannelsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["ChannelsController_rename"];
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/agents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AgentsController_list"];
+        put?: never;
+        post: operations["AgentsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/agents/{agentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AgentsController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["AgentsController_archive"];
+        options?: never;
+        head?: never;
+        patch: operations["AgentsController_update"];
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/agents/{agentId}/capabilities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AgentsController_addCapability"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/agents/{agentId}/capabilities/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["AgentsController_reorderCapabilities"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/capabilities/{capabilityId}/flow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AgentsController_flow"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/capabilities/{capabilityId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["AgentsController_archiveCapability"];
+        options?: never;
+        head?: never;
+        patch: operations["AgentsController_renameCapability"];
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/capabilities/{capabilityId}/skills/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["AgentsController_reorderSkills"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/skills": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SkillsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/skills/{skillId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SkillsController_get"];
+        put: operations["SkillsController_save"];
+        post?: never;
+        delete: operations["SkillsController_archive"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/skills/{skillId}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SkillsController_changeStatus"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/skills/{skillId}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SkillsController_versions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/skills/{skillId}/versions/{number}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SkillsController_version"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/skills/{skillId}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SkillsController_restore"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -442,6 +714,244 @@ export interface components {
         };
         AcceptInviteResultDto: {
             workspaceSlug: string;
+        };
+        NamedItemDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            usedBy: number;
+        };
+        NamedItemInputDto: {
+            name: string;
+        };
+        AgentSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            shortName: string;
+            fullName: string;
+            description: string;
+            /** @enum {string} */
+            color: "indigo" | "teal" | "fuchsia" | "amber" | "emerald" | "rose" | "sky" | "violet";
+            skillCount: number;
+        };
+        AgentInputDto: {
+            shortName: string;
+            fullName: string;
+            /** @default  */
+            description: string;
+            /** @enum {string} */
+            color: "indigo" | "teal" | "fuchsia" | "amber" | "emerald" | "rose" | "sky" | "violet";
+        };
+        AgentDetailDto: {
+            /** Format: uuid */
+            id: string;
+            shortName: string;
+            fullName: string;
+            description: string;
+            /** @enum {string} */
+            color: "indigo" | "teal" | "fuchsia" | "amber" | "emerald" | "rose" | "sky" | "violet";
+            capabilities: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                skills: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                    /** @enum {string} */
+                    status: "draft" | "defined" | "in_build" | "live";
+                    runsAlongside: boolean;
+                    stepCount: number;
+                    checksPassed: number;
+                    updatedAt: string;
+                }[];
+            }[];
+        };
+        UpdateAgentDto: {
+            shortName?: string;
+            fullName?: string;
+            /** @default  */
+            description: string;
+            /** @enum {string} */
+            color?: "indigo" | "teal" | "fuchsia" | "amber" | "emerald" | "rose" | "sky" | "violet";
+        };
+        CapabilityInputDto: {
+            name: string;
+        };
+        ReorderDto: {
+            ids: string[];
+        };
+        CapabilityFlowDto: {
+            /** Format: uuid */
+            capabilityId: string;
+            capabilityName: string;
+            skills: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                /** @enum {string} */
+                status: "draft" | "defined" | "in_build" | "live";
+                /** Format: uuid */
+                startedByRoleId: string | null;
+                trigger: string;
+                runsAlongside: boolean;
+                steps: {
+                    /** Format: uuid */
+                    id: string;
+                    /** Format: uuid */
+                    roleId: string | null;
+                    text: string;
+                    isApproval: boolean;
+                }[];
+            }[];
+        };
+        CreateSkillDto: {
+            /** Format: uuid */
+            capabilityId: string;
+            name: string;
+        };
+        SkillDetailDto: {
+            name: string;
+            /** Format: uuid */
+            startedByRoleId: string | null;
+            trigger: string;
+            steps: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                roleId: string | null;
+                text: string;
+                isApproval: boolean;
+                /** @default  */
+                ifNo: string;
+            }[];
+            inputs: {
+                /** Format: uuid */
+                id: string;
+                label: string;
+                /** @enum {string} */
+                need: "automatic" | "required";
+            }[];
+            channels: {
+                /** Format: uuid */
+                channelId: string;
+                /** @default  */
+                usage: string;
+            }[];
+            deliverable: string;
+            humanControl: string;
+            runsAlongside: boolean;
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            capabilityId: string;
+            capabilityName: string;
+            /** Format: uuid */
+            agentId: string;
+            /** @enum {string} */
+            status: "draft" | "defined" | "in_build" | "live";
+            version: number;
+            updatedAt: string;
+            updatedBy: string | null;
+        };
+        SaveSkillDto: {
+            name: string;
+            /** Format: uuid */
+            startedByRoleId: string | null;
+            trigger: string;
+            steps: {
+                /** Format: uuid */
+                id?: string;
+                /** Format: uuid */
+                roleId: string | null;
+                text: string;
+                isApproval: boolean;
+                /** @default  */
+                ifNo: string;
+            }[];
+            inputs: {
+                /** Format: uuid */
+                id?: string;
+                label: string;
+                /** @enum {string} */
+                need: "automatic" | "required";
+            }[];
+            channels: {
+                /** Format: uuid */
+                channelId: string;
+                /** @default  */
+                usage: string;
+            }[];
+            deliverable: string;
+            humanControl: string;
+            runsAlongside: boolean;
+            /** Format: uuid */
+            capabilityId: string;
+            expectedVersion: number;
+        };
+        ChangeStatusDto: {
+            /** @enum {string} */
+            status: "draft" | "defined" | "in_build" | "live";
+        };
+        SkillVersionSummaryDto: {
+            number: number;
+            note: string;
+            author: string | null;
+            createdAt: string;
+        };
+        SkillVersionDto: {
+            number: number;
+            note: string;
+            author: string | null;
+            createdAt: string;
+            skill: {
+                name: string;
+                /** Format: uuid */
+                startedByRoleId: string | null;
+                trigger: string;
+                steps: {
+                    /** Format: uuid */
+                    id: string;
+                    /** Format: uuid */
+                    roleId: string | null;
+                    text: string;
+                    isApproval: boolean;
+                    /** @default  */
+                    ifNo: string;
+                }[];
+                inputs: {
+                    /** Format: uuid */
+                    id: string;
+                    label: string;
+                    /** @enum {string} */
+                    need: "automatic" | "required";
+                }[];
+                channels: {
+                    /** Format: uuid */
+                    channelId: string;
+                    /** @default  */
+                    usage: string;
+                }[];
+                deliverable: string;
+                humanControl: string;
+                runsAlongside: boolean;
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                capabilityId: string;
+                capabilityName: string;
+                /** Format: uuid */
+                agentId: string;
+                /** @enum {string} */
+                status: "draft" | "defined" | "in_build" | "live";
+                version: number;
+                updatedAt: string;
+                updatedBy: string | null;
+            };
+        };
+        RestoreSkillDto: {
+            number: number;
+            expectedVersion: number;
         };
     };
     responses: never;
@@ -953,6 +1463,642 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AcceptInviteResultDto"];
+                };
+            };
+        };
+    };
+    RolesController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NamedItemDto"][];
+                };
+            };
+        };
+    };
+    RolesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NamedItemInputDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NamedItemDto"];
+                };
+            };
+        };
+    };
+    RolesController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                roleId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RolesController_rename: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                roleId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NamedItemInputDto"];
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NamedItemDto"];
+                };
+            };
+        };
+    };
+    ChannelsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NamedItemDto"][];
+                };
+            };
+        };
+    };
+    ChannelsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NamedItemInputDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NamedItemDto"];
+                };
+            };
+        };
+    };
+    ChannelsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ChannelsController_rename: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NamedItemInputDto"];
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NamedItemDto"];
+                };
+            };
+        };
+    };
+    AgentsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentSummaryDto"][];
+                };
+            };
+        };
+    };
+    AgentsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgentInputDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentDetailDto"];
+                };
+            };
+        };
+    };
+    AgentsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                agentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentDetailDto"];
+                };
+            };
+        };
+    };
+    AgentsController_archive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                agentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AgentsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                agentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAgentDto"];
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentDetailDto"];
+                };
+            };
+        };
+    };
+    AgentsController_addCapability: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                agentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CapabilityInputDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentDetailDto"];
+                };
+            };
+        };
+    };
+    AgentsController_reorderCapabilities: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                agentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderDto"];
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentDetailDto"];
+                };
+            };
+        };
+    };
+    AgentsController_flow: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                capabilityId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CapabilityFlowDto"];
+                };
+            };
+        };
+    };
+    AgentsController_archiveCapability: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                capabilityId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentDetailDto"];
+                };
+            };
+        };
+    };
+    AgentsController_renameCapability: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                capabilityId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CapabilityInputDto"];
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentDetailDto"];
+                };
+            };
+        };
+    };
+    AgentsController_reorderSkills: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                capabilityId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderDto"];
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentDetailDto"];
+                };
+            };
+        };
+    };
+    SkillsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSkillDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillDetailDto"];
+                };
+            };
+        };
+    };
+    SkillsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                skillId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillDetailDto"];
+                };
+            };
+        };
+    };
+    SkillsController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                skillId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveSkillDto"];
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillDetailDto"];
+                };
+            };
+        };
+    };
+    SkillsController_archive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                skillId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SkillsController_changeStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                skillId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeStatusDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillDetailDto"];
+                };
+            };
+        };
+    };
+    SkillsController_versions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                skillId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillVersionSummaryDto"][];
+                };
+            };
+        };
+    };
+    SkillsController_version: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                skillId: string;
+                number: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillVersionDto"];
+                };
+            };
+        };
+    };
+    SkillsController_restore: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                skillId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RestoreSkillDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillDetailDto"];
                 };
             };
         };

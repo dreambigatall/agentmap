@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import {
+  DEFAULT_CHANNELS,
+  DEFAULT_ROLES,
   slugify,
   type CreateWorkspaceInput,
   type RenameWorkspaceInput,
@@ -26,6 +28,9 @@ export class WorkspacesService {
             name: input.name,
             slug,
             memberships: { create: { userId, level: 'owner' } },
+            // Starting lists the admins can change in Settings.
+            roles: { create: DEFAULT_ROLES.map((name, sortOrder) => ({ name, sortOrder })) },
+            channels: { create: DEFAULT_CHANNELS.map((name, sortOrder) => ({ name, sortOrder })) },
           },
         });
         return { id: workspace.id, name: workspace.name, slug: workspace.slug, level: 'owner' };

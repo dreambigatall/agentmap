@@ -7,7 +7,8 @@ import { z } from 'zod';
  */
 export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  PORT: z.coerce.number().int().positive().default(4000),
+  // API_PORT, not PORT: tools that start the web app set PORT for it, and both run together.
+  API_PORT: z.coerce.number().int().positive().default(4000),
   DATABASE_URL: z
     .string({ required_error: 'DATABASE_URL is missing. Copy apps/api/.env.example to apps/api/.env.' })
     .startsWith('postgres', 'DATABASE_URL must be a postgres:// or postgresql:// connection string'),

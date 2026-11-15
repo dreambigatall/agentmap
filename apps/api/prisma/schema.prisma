@@ -52,6 +52,7 @@ model User {
   refreshTokens RefreshToken[]
   authTokens    AuthToken[]
   invitesSent   Invite[]       @relation("InvitedBy")
+  skillVersions SkillVersion[]
 
   @@map("users")
 }
@@ -59,16 +60,16 @@ model User {
 /// One row per issued refresh token. Tokens rotate on every use; all tokens from one
 /// sign-in share a family, and reuse of a spent token revokes the whole family.
 model RefreshToken {
-  id         String    @id @default(uuid()) @db.Uuid
-  userId     String    @map("user_id") @db.Uuid
-  familyId   String    @map("family_id") @db.Uuid
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  familyId  String    @map("family_id") @db.Uuid
   /// SHA-256 of the token; the token itself is never stored.
-  tokenHash  String    @unique @map("token_hash")
-  expiresAt  DateTime  @map("expires_at") @db.Timestamptz(3)
-  usedAt     DateTime? @map("used_at") @db.Timestamptz(3)
-  revokedAt  DateTime? @map("revoked_at") @db.Timestamptz(3)
-  userAgent  String?   @map("user_agent")
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(3)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(3)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(3)
+  userAgent String?   @map("user_agent")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -101,8 +102,17 @@ model Workspace {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  memberships Membership[]
-  invites     Invite[]
+  memberships   Membership[]
+  invites       Invite[]
+  roles         Role[]
+  channels      Channel[]
+  agents        Agent[]
+  capabilities  Capability[]
+  skills        Skill[]
+  skillSteps    SkillStep[]
+  skillInputs   SkillInput[]
+  skillChannels SkillChannel[]
+  skillVersions SkillVersion[]
 
   @@map("workspaces")
 }
@@ -146,4 +156,203 @@ model Invite {
   @@index([workspaceId])
   @@index([email])
   @@map("invites")
+}
+
+// ------------------------------------------------- Phase 2: agents and skills
+// Every table below carries workspace_id and is listed in WORKSPACE_MODELS
+// (src/prisma/prisma.service.ts), so the scoped client filters it automatically.
+
+/// A human job that can perform a step, e.g. "Line manager". Each workspace keeps its own list.
+/// Not the same as a member's permission level: a role need not be a member at all.
+model Role {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @map("workspace_id") @db.Uuid
+  name        String
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  workspace    Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  steps        SkillStep[]
+  startsSkills Skill[]     @relation("StartedBy")
+
+  @@unique([workspaceId, name])
+  @@map("roles")
+}
+
+/// Where an agent talks to people, e.g. "Email" or "Slack".
+model Channel {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @map("workspace_id") @db.Uuid
+  name        String
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  workspace Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  skills    SkillChannel[]
+
+  @@unique([workspaceId, name])
+  @@map("channels")
+}
+
+model Agent {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @map("workspace_id") @db.Uuid
+  /// Badge text, up to 6 characters, e.g. "PLA".
+  shortName   String    @map("short_name")
+  fullName    String    @map("full_name")
+  description String    @default("")
+  color       String
+  sortOrder   Int       @default(0) @map("sort_order")
+  archivedAt  DateTime? @map("archived_at") @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  workspace    Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  capabilities Capability[]
+
+  @@index([workspaceId])
+  @@map("agents")
+}
+
+/// A named group of skills inside one agent, e.g. "KPI planning".
+model Capability {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @map("workspace_id") @db.Uuid
+  agentId     String    @map("agent_id") @db.Uuid
+  name        String
+  sortOrder   Int       @default(0) @map("sort_order")
+  archivedAt  DateTime? @map("archived_at") @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  agent     Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  skills    Skill[]
+
+  @@index([agentId])
+  @@map("capabilities")
+}
+
+enum SkillStatus {
+  draft
+  defined
+  in_build
+  live
+
+  @@map("skill_status")
+}
+
+/// One workflow an agent performs, from what starts it to what it delivers.
+model Skill {
+  id              String      @id @default(uuid()) @db.Uuid
+  workspaceId     String      @map("workspace_id") @db.Uuid
+  capabilityId    String      @map("capability_id") @db.Uuid
+  name            String
+  status          SkillStatus @default(draft)
+  /// Empty means the agent starts the skill by itself.
+  startedByRoleId String?     @map("started_by_role_id") @db.Uuid
+  trigger         String      @default("")
+  deliverable     String      @default("")
+  humanControl    String      @default("") @map("human_control")
+  /// Applies alongside every other skill in the capability, e.g. approval rules.
+  runsAlongside   Boolean     @default(false) @map("runs_alongside")
+  sortOrder       Int         @default(0) @map("sort_order")
+  /// Goes up by one on every save. A save based on an older number is refused.
+  version         Int         @default(1)
+  archivedAt      DateTime?   @map("archived_at") @db.Timestamptz(3)
+  createdAt       DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  workspace  Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  capability Capability     @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+  startedBy  Role?          @relation("StartedBy", fields: [startedByRoleId], references: [id], onDelete: SetNull)
+  steps      SkillStep[]
+  inputs     SkillInput[]
+  channels   SkillChannel[]
+  versions   SkillVersion[]
+
+  @@index([capabilityId])
+  @@map("skills")
+}
+
+/// One action in a skill, done by the agent (role empty) or by one human role.
+/// Ids stay the same across saves, so comments on a step survive reordering.
+model SkillStep {
+  id          String  @id @default(uuid()) @db.Uuid
+  workspaceId String  @map("workspace_id") @db.Uuid
+  skillId     String  @map("skill_id") @db.Uuid
+  position    Int
+  roleId      String? @map("role_id") @db.Uuid
+  text        String
+  isApproval  Boolean @default(false) @map("is_approval")
+  /// What happens when an approval is refused.
+  ifNo        String  @default("") @map("if_no")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  skill     Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  role      Role?     @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  @@index([skillId, position])
+  @@map("skill_steps")
+}
+
+enum InputNeed {
+  automatic
+  required
+
+  @@map("input_need")
+}
+
+/// Information the skill needs: fetched automatically, or required from a person.
+model SkillInput {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @map("workspace_id") @db.Uuid
+  skillId     String    @map("skill_id") @db.Uuid
+  position    Int
+  label       String
+  need        InputNeed
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  skill     Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@index([skillId, position])
+  @@map("skill_inputs")
+}
+
+model SkillChannel {
+  id          String @id @default(uuid()) @db.Uuid
+  workspaceId String @map("workspace_id") @db.Uuid
+  skillId     String @map("skill_id") @db.Uuid
+  channelId   String @map("channel_id") @db.Uuid
+  /// One line on how the agent uses this channel in this skill.
+  usage       String @default("")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  skill     Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  channel   Channel   @relation(fields: [channelId], references: [id], onDelete: Restrict)
+
+  @@unique([skillId, channelId])
+  @@map("skill_channels")
+}
+
+/// A full copy of a skill as it was after one save. Never changed or deleted.
+model SkillVersion {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @map("workspace_id") @db.Uuid
+  skillId     String   @map("skill_id") @db.Uuid
+  number      Int
+  snapshot    Json
+  /// What changed, in words, e.g. "Changed steps: 1 added".
+  note        String
+  authorId    String?  @map("author_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  skill     Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  author    User?     @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@unique([skillId, number])
+  @@map("skill_versions")
 }

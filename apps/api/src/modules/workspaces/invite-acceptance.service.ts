@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import type { InviteLookup } from '@skillflow/shared';
 import { sha256 } from '../../common/crypto';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService, TX_OPTIONS } from '../../prisma/prisma.service';
 
 const NOT_VALID = 'This invite link is not valid any more. Ask for a new invite.';
 
@@ -66,7 +66,7 @@ export class InviteAcceptance {
         where: { id: userId, emailVerifiedAt: null },
         data: { emailVerifiedAt: new Date() },
       });
-    });
+    }, TX_OPTIONS);
 
     return { workspaceSlug: invite.workspace.slug };
   }

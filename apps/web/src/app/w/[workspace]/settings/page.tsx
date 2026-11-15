@@ -1,6 +1,6 @@
 'use client';
 
-import { renameWorkspaceSchema, type WorkspaceDetail } from '@skillflow/shared';
+import { can, renameWorkspaceSchema, type WorkspaceDetail } from '@skillflow/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
@@ -9,6 +9,7 @@ import { Card, CardHeader } from '@/components/ui/card';
 import { TextField } from '@/components/ui/field';
 import { notify } from '@/components/ui/overlays';
 import { Can } from '@/features/auth/can';
+import { NamedList } from '@/features/settings/named-list';
 import { fieldErrors } from '@/features/auth/form-errors';
 import { ME_KEY, useCurrentWorkspace } from '@/features/auth/use-me';
 import { api, call } from '@/lib/api/client';
@@ -73,6 +74,8 @@ export default function SettingsPage() {
           </form>
         </Can>
       </Card>
+      <NamedList kind="roles" workspaceId={workspace.id} canEdit={can(workspace.level, 'settings.edit')} />
+      <NamedList kind="channels" workspaceId={workspace.id} canEdit={can(workspace.level, 'settings.edit')} />
     </div>
   );
 }

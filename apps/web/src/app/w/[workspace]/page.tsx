@@ -4,12 +4,15 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Can } from '@/features/auth/can';
+import { useAgents } from '@/features/agents/queries';
 import { useCurrentWorkspace } from '@/features/auth/use-me';
 
 export default function DashboardPage() {
   const { workspace: slug } = useParams<{ workspace: string }>();
   const { me, workspace } = useCurrentWorkspace(slug);
+  const agents = useAgents(workspace?.id ?? '');
   if (!workspace || !me.data) return null;
+  const firstAgent = agents.data?.[0];
 
   const steps = [
     { done: true, label: 'Create your workspace' },
@@ -20,7 +23,12 @@ export default function DashboardPage() {
       href: `/w/${slug}/settings/members`,
       action: 'members.manage' as const,
     },
-    { done: false, label: 'Add your first agent (coming in the next phase)' },
+    {
+      done: (firstAgent?.skillCount ?? 0) > 0,
+      label: firstAgent ? `Describe ${firstAgent.fullName}’s first skill` : 'Add your first agent with + next to Agents',
+      href: firstAgent ? `/w/${slug}/agents/${firstAgent.id}` : undefined,
+      action: 'content.edit' as const,
+    },
   ];
 
   return (

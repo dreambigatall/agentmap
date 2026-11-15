@@ -15,8 +15,8 @@ async function bootstrap(): Promise<void> {
     SwaggerModule.setup(`${API_PREFIX}/docs`, app, buildOpenApi(app));
   }
 
-  await app.listen(env.PORT);
-  Logger.log(`API listening on http://localhost:${env.PORT}/${API_PREFIX}`, 'Bootstrap');
+  await app.listen(env.API_PORT);
+  Logger.log(`API listening on http://localhost:${env.API_PORT}/${API_PREFIX}`, 'Bootstrap');
 }
 
 bootstrap().catch((error: Error) => {

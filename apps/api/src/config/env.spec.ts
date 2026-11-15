@@ -9,7 +9,7 @@ const base = {
 describe('parseEnv', () => {
   it('fills defaults when only the required values are given', () => {
     const env = parseEnv(base);
-    expect(env.PORT).toBe(4000);
+    expect(env.API_PORT).toBe(4000);
     expect(env.WEB_ORIGIN).toBe('http://localhost:3000');
     expect(env.RESEND_API_KEY).toBeUndefined();
   });
