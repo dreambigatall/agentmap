@@ -3,6 +3,7 @@
 import {
   can,
   compareSteps,
+  isSignedOff,
   INPUT_NEEDS,
   isReady,
   SKILL_STATUSES,
@@ -32,6 +33,9 @@ import { AppTab, AppTabPanel, AppTabsList, Tabs } from '@/components/ui/tabs';
 import { FlowDiagram, type NodeMark } from '@/features/flow/flow-diagram';
 import { toLayout } from '@/features/flow/to-layout';
 import { HistoryDialog } from '@/features/skills/history-dialog';
+import { CommentsPanel } from '@/features/collaboration/comments-panel';
+import { collabKeys, useSignoffs } from '@/features/collaboration/queries';
+import { SignoffCard } from '@/features/collaboration/signoff-card';
 import { AgentBadge } from '@/features/agents/agent-badge';
 import { keys, useAgent, useAgentCache, useChannels, useRoles, useSkill } from '@/features/agents/queries';
 import { useCurrentWorkspace } from '@/features/auth/use-me';
@@ -54,12 +58,12 @@ import { cn } from '@/lib/utils';
 
 export default function SkillPage() {
   const { workspace: slug, skillId } = useParams<{ workspace: string; skillId: string }>();
-  const { workspace } = useCurrentWorkspace(slug);
-  if (!workspace) return null;
-  return <SkillLoader workspace={workspace} skillId={skillId} />;
+  const { me, workspace } = useCurrentWorkspace(slug);
+  if (!workspace || !me.data) return null;
+  return <SkillLoader workspace={workspace} skillId={skillId} me={{ id: me.data.id }} />;
 }
 
-function SkillLoader({ workspace, skillId }: { workspace: WorkspaceSummary; skillId: string }) {
+function SkillLoader({ workspace, skillId, me }: { workspace: WorkspaceSummary; skillId: string; me: { id: string } }) {
   const skill = useSkill(workspace.id, skillId);
   const agentId = skill.data?.agentId ?? '';
   const agent = useAgent(workspace.id, agentId);
@@ -81,7 +85,7 @@ function SkillLoader({ workspace, skillId }: { workspace: WorkspaceSummary; skil
     return <p className="text-sm text-muted-foreground">Loading…</p>;
   }
 
-  const props = { workspace, agent: agent.data, roles: roles.data, channels: channels.data };
+  const props = { workspace, me, agent: agent.data, roles: roles.data, channels: channels.data };
   return can(workspace.level, 'content.edit') ? (
     <SkillEditor key={skill.data.id} initial={skill.data} {...props} />
   ) : (
@@ -91,6 +95,7 @@ function SkillLoader({ workspace, skillId }: { workspace: WorkspaceSummary; skil
 
 interface Context {
   workspace: WorkspaceSummary;
+  me: { id: string };
   agent: AgentDetail;
   roles: NamedItem[];
   channels: NamedItem[];
@@ -132,7 +137,15 @@ function Header({
   );
 }
 
-function SkillReadOnly({ skill, workspace, agent, roles, channels }: Context & { skill: SkillDetail }) {
+/** "Step 2: Approves the plans…", for choosing which step a comment is about. */
+function stepChoices(skill: SkillDetail) {
+  return skill.steps.map((step, i) => ({
+    id: step.id,
+    label: `step ${i + 1}: ${step.text.length > 40 ? `${step.text.slice(0, 40)}…` : step.text}`,
+  }));
+}
+
+function SkillReadOnly({ skill, workspace, me, agent, roles, channels }: Context & { skill: SkillDetail }) {
   const [historyOpen, setHistoryOpen] = useState(false);
   const layout = useMemo(() => toLayout([{ ...skill, runsAlongside: false }], agent.shortName, roles), [skill, agent.shortName, roles]);
   return (
@@ -152,16 +165,34 @@ function SkillReadOnly({ skill, workspace, agent, roles, channels }: Context & {
         <AppTabsList aria-label="Views of this skill">
           <AppTab value="story">Story</AppTab>
           <AppTab value="swimlane">Swimlane</AppTab>
+          <AppTab value="comments">Comments</AppTab>
         </AppTabsList>
         <AppTabPanel value="story">
-          <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
+          <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
             <Card className="p-5">
               <StoryView skill={skill} agent={agent} roles={roles} channels={channels} />
             </Card>
-            <Card className="h-fit p-5">
-              <ReadinessPanel skill={skill} />
-            </Card>
+            <div className="space-y-4">
+              <Card className="h-fit p-5">
+                <SignoffCard workspaceId={workspace.id} level={workspace.level} me={me} skill={skill} />
+              </Card>
+              <Card className="h-fit p-5">
+                <ReadinessPanel skill={skill} />
+              </Card>
+            </div>
           </div>
+        </AppTabPanel>
+        <AppTabPanel value="comments">
+          <Card className="max-w-2xl p-5">
+            <CommentsPanel
+              workspaceId={workspace.id}
+              targetType="skill"
+              targetId={skill.id}
+              steps={stepChoices(skill)}
+              me={me}
+              level={workspace.level}
+            />
+          </Card>
         </AppTabPanel>
         <AppTabPanel value="swimlane">
           <FlowDiagram layout={layout} agent={agent} label={`Swimlane for ${skill.name}`} />
@@ -225,7 +256,7 @@ const Cross = () => (
   </svg>
 );
 
-function SkillEditor({ initial, workspace, agent, roles, channels }: Context & { initial: SkillDetail }) {
+function SkillEditor({ initial, workspace, me, agent, roles, channels }: Context & { initial: SkillDetail }) {
   const router = useRouter();
   const client = useQueryClient();
   const cache = useAgentCache(workspace.id);
@@ -236,6 +267,7 @@ function SkillEditor({ initial, workspace, agent, roles, channels }: Context & {
   const [conflict, setConflict] = useState<string | null>(null);
   const [lastChange, setLastChange] = useState<LastChange | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const signoffs = useSignoffs(workspace.id, initial.id);
   const dirty = isDirty(draft, saved);
 
   // New and changed steps since the last save, while nothing else has been edited.
@@ -277,6 +309,7 @@ function SkillEditor({ initial, workspace, agent, roles, channels }: Context & {
       setDraft(toDraft(next));
       client.setQueryData(keys.skill(workspace.id, next.id), next);
       void cache.refreshAll();
+      void client.invalidateQueries({ queryKey: collabKeys.signoffs(workspace.id, next.id) });
     },
     [client, cache, workspace.id],
   );
@@ -422,6 +455,7 @@ function SkillEditor({ initial, workspace, agent, roles, channels }: Context & {
   }
 
   const savedReady = isReady(saved);
+  const savedSignedOff = isSignedOff(signoffs.data ?? [], saved.version);
 
   return (
     <div className={cn('mx-auto max-w-6xl space-y-6', dirty && 'pb-20 lg:pb-0')}>
@@ -495,7 +529,20 @@ function SkillEditor({ initial, workspace, agent, roles, channels }: Context & {
         <AppTabsList aria-label="Views of this skill">
           <AppTab value="edit">Edit</AppTab>
           <AppTab value="swimlane">Swimlane</AppTab>
+          <AppTab value="comments">Comments</AppTab>
         </AppTabsList>
+        <AppTabPanel value="comments">
+          <Card className="max-w-2xl p-5">
+            <CommentsPanel
+              workspaceId={workspace.id}
+              targetType="skill"
+              targetId={saved.id}
+              steps={stepChoices(saved)}
+              me={me}
+              level={workspace.level}
+            />
+          </Card>
+        </AppTabPanel>
         <AppTabPanel value="swimlane" className="space-y-2">
           <p className="text-sm text-muted-foreground">
             One row per actor. It follows your edits as you type{dirty ? ', including unsaved ones' : ''}.
@@ -778,7 +825,7 @@ function SkillEditor({ initial, workspace, agent, roles, channels }: Context & {
                 </MenuTrigger>
                 <AppMenuContent className="w-72">
                   {SKILL_STATUSES.map((status) => {
-                    const verdict = statusChange(status, { ready: savedReady, signedOff: false });
+                    const verdict = statusChange(status, { ready: savedReady, signedOff: savedSignedOff });
                     return (
                       <AppMenuItem
                         key={status}
@@ -802,6 +849,10 @@ function SkillEditor({ initial, workspace, agent, roles, channels }: Context & {
               </Menu>
               {dirty && <p className="mt-1.5 text-xs text-muted-foreground">Save your changes before changing status.</p>}
             </div>
+          </Card>
+
+          <Card className="p-4">
+            <SignoffCard workspaceId={workspace.id} level={workspace.level} me={me} skill={saved} dirty={dirty} />
           </Card>
 
           <Card className="p-4">

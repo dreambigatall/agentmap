@@ -21,6 +21,14 @@ const WORKSPACE_MODELS = new Set<string>([
   Prisma.ModelName.SkillInput,
   Prisma.ModelName.SkillChannel,
   Prisma.ModelName.SkillVersion,
+  Prisma.ModelName.Request,
+  Prisma.ModelName.RequestStep,
+  Prisma.ModelName.RequestInput,
+  Prisma.ModelName.RequestVersion,
+  Prisma.ModelName.StoredFile,
+  Prisma.ModelName.Comment,
+  Prisma.ModelName.Signoff,
+  Prisma.ModelName.Notification,
 ]);
 
 const FILTERED_OPERATIONS = new Set([
