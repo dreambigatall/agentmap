@@ -29,6 +29,11 @@ describeDb('workspace isolation', () => {
   let aliceCapabilityId: string;
   let aliceSkillId: string;
   let bobCapabilityId: string;
+  let aliceRequestId: string;
+  let aliceFileId: string;
+  let aliceCommentId: string;
+  // No sign-off exists yet; the guard must refuse before the id is even looked up.
+  const someSignoffId = '5f0c9a52-3c1d-4f7e-9b2a-7d6e5c4b3a21';
 
   const ws = () => `/api/w/${aliceWs.id}`;
   const skillBody = () => ({
@@ -96,6 +101,39 @@ describeDb('workspace isolation', () => {
     { method: 'get', path: () => `${ws()}/skills/${aliceSkillId}/versions/1` },
     { method: 'post', path: () => `${ws()}/skills/${aliceSkillId}/restore`, body: () => ({ number: 1, expectedVersion: 1 }) },
     { method: 'get', path: () => `${ws()}/capabilities/${aliceCapabilityId}/flow` },
+    { method: 'get', path: () => `${ws()}/requests` },
+    { method: 'post', path: () => `${ws()}/requests`, body: () => ({ agentId: aliceAgentId, name: 'Intruder' }) },
+    { method: 'get', path: () => `${ws()}/requests/${aliceRequestId}` },
+    {
+      method: 'put',
+      path: () => `${ws()}/requests/${aliceRequestId}`,
+      body: () => ({
+        name: 'Taken over', trigger: '', ownerRole: '', frequency: null, result: '', steps: [], inputs: [],
+        rules: '', problems: '', keepHuman: '', expectedVersion: 1,
+      }),
+    },
+    { method: 'post', path: () => `${ws()}/requests/${aliceRequestId}/status`, body: () => ({ status: 'declined' }) },
+    { method: 'post', path: () => `${ws()}/requests/${aliceRequestId}/convert`, body: () => ({ capabilityId: aliceCapabilityId }) },
+    { method: 'delete', path: () => `${ws()}/requests/${aliceRequestId}` },
+    { method: 'post', path: () => `${ws()}/requests/${aliceRequestId}/files` },
+    { method: 'get', path: () => `${ws()}/files/${aliceFileId}` },
+    { method: 'delete', path: () => `${ws()}/files/${aliceFileId}` },
+    { method: 'get', path: () => `${ws()}/comments?targetType=request&targetId=${aliceRequestId}` },
+    {
+      method: 'post',
+      path: () => `${ws()}/comments`,
+      body: () => ({ targetType: 'request', targetId: aliceRequestId, body: 'Intruder' }),
+    },
+    { method: 'patch', path: () => `${ws()}/comments/${aliceCommentId}`, body: () => ({ body: 'Edited' }) },
+    { method: 'delete', path: () => `${ws()}/comments/${aliceCommentId}` },
+    { method: 'post', path: () => `${ws()}/comments/${aliceCommentId}/resolve` },
+    { method: 'post', path: () => `${ws()}/comments/${aliceCommentId}/reopen` },
+    { method: 'get', path: () => `${ws()}/skills/${aliceSkillId}/signoffs` },
+    { method: 'post', path: () => `${ws()}/skills/${aliceSkillId}/signoffs`, body: () => ({ ownerId: alice.me.id }) },
+    { method: 'post', path: () => `${ws()}/signoffs/${someSignoffId}/decide`, body: () => ({ decision: 'approve' }) },
+    { method: 'post', path: () => `${ws()}/signoffs/${someSignoffId}/cancel` },
+    { method: 'get', path: () => `${ws()}/notifications` },
+    { method: 'post', path: () => `${ws()}/notifications/read`, body: () => ({}) },
   ];
 
   beforeAll(async () => {
@@ -136,7 +174,23 @@ describeDb('workspace isolation', () => {
       .send({ shortName: 'BOB', fullName: 'Bob Agent', color: 'teal' })
       .expect(201);
     bobCapabilityId = bobAgent.body.capabilities[0].id;
-  }, 180_000);
+
+    const request = await alice.agent
+      .post(`${ws()}/requests`)
+      .send({ agentId: aliceAgentId, name: 'Alice request' })
+      .expect(201);
+    aliceRequestId = request.body.id;
+    const file = await alice.agent
+      .post(`${ws()}/requests/${aliceRequestId}/files`)
+      .attach('file', Buffer.from('private notes'), 'notes.txt')
+      .expect(201);
+    aliceFileId = file.body.id;
+    const comment = await alice.agent
+      .post(`${ws()}/comments`)
+      .send({ targetType: 'request', targetId: aliceRequestId, body: 'Private thought' })
+      .expect(201);
+    aliceCommentId = comment.body.id;
+  }, 240_000);
 
   afterAll(async () => {
     await app?.close();
@@ -169,6 +223,13 @@ describeDb('workspace isolation', () => {
     await bob.agent.get(`${own}/skills/${aliceSkillId}/versions/1`).expect(404);
     await bob.agent.post(`${own}/skills/${aliceSkillId}/restore`).send({ number: 1, expectedVersion: 1 }).expect(404);
     await bob.agent.get(`${own}/capabilities/${aliceCapabilityId}/flow`).expect(404);
+    await bob.agent.get(`${own}/requests/${aliceRequestId}`).expect(404);
+    await bob.agent.get(`${own}/files/${aliceFileId}`).expect(404);
+    await bob.agent.get(`${own}/comments?targetType=request&targetId=${aliceRequestId}`).expect(404);
+    await bob.agent.patch(`${own}/comments/${aliceCommentId}`).send({ body: 'Edited' }).expect(404);
+    await bob.agent.post(`${own}/comments`).send({ targetType: 'skill', targetId: aliceSkillId, body: 'Hi' }).expect(404);
+    await bob.agent.get(`${own}/skills/${aliceSkillId}/signoffs`).expect(404);
+    await bob.agent.post(`${own}/requests`).send({ agentId: aliceAgentId, name: 'Sneaky' }).expect(400);
     await bob.agent.put(`${own}/skills/${aliceSkillId}`).send(skillBody()).expect(404);
     // Creating a skill in Alice's capability from Bob's workspace is refused too.
     await bob.agent
@@ -200,6 +261,10 @@ describeDb('workspace isolation', () => {
     expect(skill.body).toMatchObject({ name: 'Alice skill', version: 1, status: 'draft' });
     const roles = await alice.agent.get(`${ws()}/roles`).expect(200);
     expect(roles.body.map((r: { id: string }) => r.id)).toContain(aliceRoleId);
+    const file = await alice.agent.get(`${ws()}/files/${aliceFileId}`).expect(200);
+    expect(file.text ?? file.body.toString()).toBe('private notes');
+    const comments = await alice.agent.get(`${ws()}/comments?targetType=request&targetId=${aliceRequestId}`).expect(200);
+    expect(comments.body.map((c: { body: string }) => c.body)).toEqual(['Private thought']);
     const members = await alice.agent.get(`/api/w/${aliceWs.id}/members`).expect(200);
     expect(members.body).toHaveLength(1);
     expect(members.body[0].level).toBe('owner');
@@ -230,7 +295,12 @@ describeDb('workspace isolation', () => {
         .replace(aliceAgentId, ':agentId')
         .replace(aliceCapabilityId, ':capabilityId')
         .replace(aliceSkillId, ':skillId')
-        .replace(/\/versions\/1$/, '/versions/:number');
+        .replace(/\/versions\/1$/, '/versions/:number')
+        .replace(aliceRequestId, ':requestId')
+        .replace(aliceFileId, ':fileId')
+        .replace(aliceCommentId, ':commentId')
+        .replace(someSignoffId, ':signoffId')
+        .replace(/\?.*$/, '');
       return `${r.method.toUpperCase()} ${path}`;
     });
     expect(registered.length).toBeGreaterThan(0);

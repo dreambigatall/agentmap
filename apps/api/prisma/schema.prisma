@@ -48,11 +48,20 @@ model User {
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  memberships   Membership[]
-  refreshTokens RefreshToken[]
-  authTokens    AuthToken[]
-  invitesSent   Invite[]       @relation("InvitedBy")
-  skillVersions SkillVersion[]
+  memberships       Membership[]
+  refreshTokens     RefreshToken[]
+  authTokens        AuthToken[]
+  invitesSent       Invite[]         @relation("InvitedBy")
+  skillVersions     SkillVersion[]
+  requests          Request[]        @relation("RequestAuthor")
+  requestVersions   RequestVersion[]
+  filesUploaded     StoredFile[]
+  comments          Comment[]        @relation("CommentAuthor")
+  commentsResolved  Comment[]        @relation("CommentResolver")
+  signoffsRequested Signoff[]        @relation("SignoffRequester")
+  signoffsOwned     Signoff[]        @relation("SignoffOwner")
+  notifications     Notification[]   @relation("NotificationRecipient")
+  notificationsSent Notification[]   @relation("NotificationActor")
 
   @@map("users")
 }
@@ -102,17 +111,25 @@ model Workspace {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  memberships   Membership[]
-  invites       Invite[]
-  roles         Role[]
-  channels      Channel[]
-  agents        Agent[]
-  capabilities  Capability[]
-  skills        Skill[]
-  skillSteps    SkillStep[]
-  skillInputs   SkillInput[]
-  skillChannels SkillChannel[]
-  skillVersions SkillVersion[]
+  memberships     Membership[]
+  invites         Invite[]
+  roles           Role[]
+  channels        Channel[]
+  agents          Agent[]
+  capabilities    Capability[]
+  skills          Skill[]
+  skillSteps      SkillStep[]
+  skillInputs     SkillInput[]
+  skillChannels   SkillChannel[]
+  skillVersions   SkillVersion[]
+  requests        Request[]
+  requestSteps    RequestStep[]
+  requestInputs   RequestInput[]
+  requestVersions RequestVersion[]
+  files           StoredFile[]
+  comments        Comment[]
+  signoffs        Signoff[]
+  notifications   Notification[]
 
   @@map("workspaces")
 }
@@ -172,9 +189,10 @@ model Role {
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  workspace    Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   steps        SkillStep[]
-  startsSkills Skill[]     @relation("StartedBy")
+  startsSkills Skill[]       @relation("StartedBy")
+  requestSteps RequestStep[]
 
   @@unique([workspaceId, name])
   @@map("roles")
@@ -211,6 +229,7 @@ model Agent {
 
   workspace    Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   capabilities Capability[]
+  requests     Request[]
 
   @@index([workspaceId])
   @@map("agents")
@@ -272,6 +291,8 @@ model Skill {
   inputs     SkillInput[]
   channels   SkillChannel[]
   versions   SkillVersion[]
+  signoffs   Signoff[]
+  requests   Request[]
 
   @@index([capabilityId])
   @@map("skills")
@@ -355,4 +376,235 @@ model SkillVersion {
 
   @@unique([skillId, number])
   @@map("skill_versions")
+}
+
+// ------------------------------------------------- Phase 4: requests, comments, sign-off
+
+enum RequestStatus {
+  new
+  in_review
+  approved
+  declined
+
+  @@map("request_status")
+}
+
+enum RequestFrequency {
+  daily
+  weekly
+  monthly
+  quarterly
+  when_needed
+
+  @@map("request_frequency")
+}
+
+/// How a piece of work is done today, described by the people who do it.
+/// An approved request can be turned into a draft skill.
+model Request {
+  id          String            @id @default(uuid()) @db.Uuid
+  workspaceId String            @map("workspace_id") @db.Uuid
+  agentId     String            @map("agent_id") @db.Uuid
+  name        String
+  status      RequestStatus     @default(new)
+  /// What starts the work today, and who starts it.
+  trigger     String            @default("")
+  /// The role accountable for the work, in the author's words.
+  ownerRole   String            @default("") @map("owner_role")
+  frequency   RequestFrequency?
+  result      String            @default("")
+  rules       String            @default("")
+  problems    String            @default("")
+  /// Decisions or steps that should never be automated.
+  keepHuman   String            @default("") @map("keep_human")
+  authorId    String            @map("author_id") @db.Uuid
+  /// The skill this request became, once converted.
+  skillId     String?           @map("skill_id") @db.Uuid
+  version     Int               @default(1)
+  archivedAt  DateTime?         @map("archived_at") @db.Timestamptz(3)
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  agent     Agent            @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  author    User             @relation("RequestAuthor", fields: [authorId], references: [id])
+  skill     Skill?           @relation(fields: [skillId], references: [id], onDelete: SetNull)
+  steps     RequestStep[]
+  inputs    RequestInput[]
+  versions  RequestVersion[]
+  files     StoredFile[]
+
+  @@index([agentId])
+  @@map("requests")
+}
+
+/// One step of today's process. The actor is a workspace role, or free text when
+/// the author picked "someone else".
+model RequestStep {
+  id          String  @id @default(uuid()) @db.Uuid
+  workspaceId String  @map("workspace_id") @db.Uuid
+  requestId   String  @map("request_id") @db.Uuid
+  position    Int
+  roleId      String? @map("role_id") @db.Uuid
+  otherRole   String  @default("") @map("other_role")
+  action      String
+  /// Where it happens: a system, a meeting, a spreadsheet.
+  place       String  @default("")
+  isApproval  Boolean @default(false) @map("is_approval")
+  ifNo        String  @default("") @map("if_no")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  request   Request   @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  role      Role?     @relation(fields: [roleId], references: [id], onDelete: SetNull)
+
+  @@index([requestId, position])
+  @@map("request_steps")
+}
+
+/// Information or a document someone provides along the way.
+model RequestInput {
+  id          String @id @default(uuid()) @db.Uuid
+  workspaceId String @map("workspace_id") @db.Uuid
+  requestId   String @map("request_id") @db.Uuid
+  position    Int
+  what        String
+  who         String @default("")
+
+  workspace Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  request   Request      @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  files     StoredFile[]
+
+  @@index([requestId, position])
+  @@map("request_inputs")
+}
+
+model RequestVersion {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @map("workspace_id") @db.Uuid
+  requestId   String   @map("request_id") @db.Uuid
+  number      Int
+  snapshot    Json
+  note        String
+  authorId    String?  @map("author_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  request   Request   @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  author    User?     @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@unique([requestId, number])
+  @@map("request_versions")
+}
+
+/// An uploaded file, stored in Postgres. Up to 10 MB each; the workspace total is capped.
+/// `data` is only ever selected by the download route.
+model StoredFile {
+  id             String   @id @default(uuid()) @db.Uuid
+  workspaceId    String   @map("workspace_id") @db.Uuid
+  requestId      String   @map("request_id") @db.Uuid
+  requestInputId String?  @map("request_input_id") @db.Uuid
+  name           String
+  mimeType       String   @map("mime_type")
+  size           Int
+  data           Bytes
+  uploadedById   String   @map("uploaded_by_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  request      Request       @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  requestInput RequestInput? @relation(fields: [requestInputId], references: [id], onDelete: SetNull)
+  uploadedBy   User          @relation(fields: [uploadedById], references: [id])
+
+  @@index([requestId])
+  @@index([workspaceId])
+  @@map("files")
+}
+
+enum CommentTarget {
+  skill
+  request
+
+  @@map("comment_target")
+}
+
+/// A note on a skill or a request, optionally on one of its steps.
+/// stepId is not a foreign key: a comment outlives the step it was on.
+model Comment {
+  id               String        @id @default(uuid()) @db.Uuid
+  workspaceId      String        @map("workspace_id") @db.Uuid
+  targetType       CommentTarget @map("target_type")
+  targetId         String        @map("target_id") @db.Uuid
+  stepId           String?       @map("step_id") @db.Uuid
+  body             String
+  mentionedUserIds String[]      @default([]) @map("mentioned_user_ids") @db.Uuid
+  authorId         String        @map("author_id") @db.Uuid
+  resolvedAt       DateTime?     @map("resolved_at") @db.Timestamptz(3)
+  resolvedById     String?       @map("resolved_by_id") @db.Uuid
+  editedAt         DateTime?     @map("edited_at") @db.Timestamptz(3)
+  createdAt        DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  author     User      @relation("CommentAuthor", fields: [authorId], references: [id])
+  resolvedBy User?     @relation("CommentResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([targetType, targetId])
+  @@map("comments")
+}
+
+enum SignoffStatus {
+  pending
+  approved
+  changes_asked
+  cancelled
+  /// The skill changed after the sign-off was asked or given.
+  outdated
+
+  @@map("signoff_status")
+}
+
+/// A business owner's decision on one exact version of a skill.
+model Signoff {
+  id            String        @id @default(uuid()) @db.Uuid
+  workspaceId   String        @map("workspace_id") @db.Uuid
+  skillId       String        @map("skill_id") @db.Uuid
+  skillVersion  Int           @map("skill_version")
+  status        SignoffStatus @default(pending)
+  requestedById String        @map("requested_by_id") @db.Uuid
+  ownerId       String        @map("owner_id") @db.Uuid
+  /// The owner's reason when asking for changes, optional when approving.
+  note          String        @default("")
+  decidedAt     DateTime?     @map("decided_at") @db.Timestamptz(3)
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  skill       Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  requestedBy User      @relation("SignoffRequester", fields: [requestedById], references: [id])
+  owner       User      @relation("SignoffOwner", fields: [ownerId], references: [id])
+
+  @@index([skillId])
+  @@index([ownerId, status])
+  @@map("signoffs")
+}
+
+/// Something a person should know about, shown in the bell and often emailed.
+model Notification {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @map("workspace_id") @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  kind        String
+  text        String
+  /// A path inside the web app, e.g. /w/acme/skills/123.
+  link        String
+  actorId     String?   @map("actor_id") @db.Uuid
+  readAt      DateTime? @map("read_at") @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation("NotificationRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  actor     User?     @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([userId, workspaceId, createdAt])
+  @@map("notifications")
 }

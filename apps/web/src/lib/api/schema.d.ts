@@ -596,6 +596,246 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/w/{workspaceId}/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["NotificationsController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/notifications/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["NotificationsController_markRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["RequestsController_list"];
+        put?: never;
+        post: operations["RequestsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/requests/{requestId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["RequestsController_get"];
+        put: operations["RequestsController_save"];
+        post?: never;
+        delete: operations["RequestsController_archive"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/requests/{requestId}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RequestsController_changeStatus"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/requests/{requestId}/convert": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RequestsController_convert"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/requests/{requestId}/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RequestsController_upload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/files/{fileId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["RequestsController_download"];
+        put?: never;
+        post?: never;
+        delete: operations["RequestsController_removeFile"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["CommentsController_list"];
+        put?: never;
+        post: operations["CommentsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/comments/{commentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["CommentsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["CommentsController_edit"];
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/comments/{commentId}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CommentsController_resolve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/comments/{commentId}/reopen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CommentsController_reopen"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/skills/{skillId}/signoffs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SignoffsController_list"];
+        put?: never;
+        post: operations["SignoffsController_request"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/signoffs/{signoffId}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SignoffsController_decide"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/signoffs/{signoffId}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SignoffsController_cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -952,6 +1192,271 @@ export interface components {
         RestoreSkillDto: {
             number: number;
             expectedVersion: number;
+        };
+        NotificationListDto: {
+            items: {
+                /** Format: uuid */
+                id: string;
+                kind: string;
+                text: string;
+                link: string;
+                actor: string | null;
+                read: boolean;
+                createdAt: string;
+            }[];
+            unread: number;
+        };
+        MarkReadDto: {
+            ids?: string[];
+        };
+        RequestSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** @enum {string} */
+            status: "new" | "in_review" | "approved" | "declined";
+            /** Format: uuid */
+            agentId: string;
+            author: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            };
+            stepCount: number;
+            /** Format: uuid */
+            skillId: string | null;
+            updatedAt: string;
+        };
+        CreateRequestDto: {
+            /** Format: uuid */
+            agentId: string;
+            name: string;
+        };
+        RequestDetailDto: {
+            name: string;
+            trigger: string;
+            ownerRole: string;
+            /** @enum {string|null} */
+            frequency: "daily" | "weekly" | "monthly" | "quarterly" | "when_needed" | null;
+            result: string;
+            steps: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                roleId: string | null;
+                otherRole: string;
+                action: string;
+                place: string;
+                isApproval: boolean;
+                ifNo: string;
+            }[];
+            inputs: {
+                /** Format: uuid */
+                id: string;
+                what: string;
+                who: string;
+            }[];
+            rules: string;
+            problems: string;
+            keepHuman: string;
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            agentId: string;
+            /** @enum {string} */
+            status: "new" | "in_review" | "approved" | "declined";
+            version: number;
+            author: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            };
+            /** Format: uuid */
+            skillId: string | null;
+            skillName: string | null;
+            files: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                mimeType: string;
+                size: number;
+                /** Format: uuid */
+                requestInputId: string | null;
+                uploadedBy: string;
+                createdAt: string;
+            }[];
+            createdAt: string;
+            updatedAt: string;
+        };
+        SaveRequestDto: {
+            name: string;
+            trigger: string;
+            ownerRole: string;
+            /** @enum {string|null} */
+            frequency: "daily" | "weekly" | "monthly" | "quarterly" | "when_needed" | null;
+            result: string;
+            steps: {
+                /** Format: uuid */
+                id?: string;
+                /** Format: uuid */
+                roleId: string | null;
+                /** @default  */
+                otherRole: string;
+                action: string;
+                /** @default  */
+                place: string;
+                isApproval: boolean;
+                /** @default  */
+                ifNo: string;
+            }[];
+            inputs: {
+                /** Format: uuid */
+                id?: string;
+                what: string;
+                /** @default  */
+                who: string;
+            }[];
+            rules: string;
+            problems: string;
+            keepHuman: string;
+            expectedVersion: number;
+        };
+        RequestStatusDto: {
+            /** @enum {string} */
+            status: "new" | "in_review" | "approved" | "declined";
+        };
+        ConvertRequestDto: {
+            /** Format: uuid */
+            capabilityId: string;
+        };
+        ConvertedSkillDto: {
+            name: string;
+            /** Format: uuid */
+            startedByRoleId: string | null;
+            trigger: string;
+            steps: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                roleId: string | null;
+                text: string;
+                isApproval: boolean;
+                /** @default  */
+                ifNo: string;
+            }[];
+            inputs: {
+                /** Format: uuid */
+                id: string;
+                label: string;
+                /** @enum {string} */
+                need: "automatic" | "required";
+            }[];
+            channels: {
+                /** Format: uuid */
+                channelId: string;
+                /** @default  */
+                usage: string;
+            }[];
+            deliverable: string;
+            humanControl: string;
+            runsAlongside: boolean;
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            capabilityId: string;
+            capabilityName: string;
+            /** Format: uuid */
+            agentId: string;
+            /** @enum {string} */
+            status: "draft" | "defined" | "in_build" | "live";
+            version: number;
+            updatedAt: string;
+            updatedBy: string | null;
+        };
+        FileSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            mimeType: string;
+            size: number;
+            /** Format: uuid */
+            requestInputId: string | null;
+            uploadedBy: string;
+            createdAt: string;
+        };
+        CommentDto: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            targetType: "skill" | "request";
+            /** Format: uuid */
+            targetId: string;
+            /** Format: uuid */
+            stepId: string | null;
+            body: string;
+            author: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            };
+            mentions: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            }[];
+            resolved: boolean;
+            resolvedBy: string | null;
+            editedAt: string | null;
+            createdAt: string;
+        };
+        CreateCommentDto: {
+            /** @enum {string} */
+            targetType: "skill" | "request";
+            /** Format: uuid */
+            targetId: string;
+            /**
+             * Format: uuid
+             * @default null
+             */
+            stepId: string | null;
+            body: string;
+            /** @default [] */
+            mentions: string[];
+        };
+        EditCommentDto: {
+            body: string;
+        };
+        SignoffDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            skillId: string;
+            skillVersion: number;
+            /** @enum {string} */
+            status: "pending" | "approved" | "changes_asked" | "cancelled" | "outdated";
+            requestedBy: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            };
+            owner: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            };
+            note: string;
+            decidedAt: string | null;
+            createdAt: string;
+        };
+        RequestSignoffDto: {
+            /** Format: uuid */
+            ownerId: string;
+        };
+        DecideSignoffDto: {
+            /** @enum {string} */
+            decision: "approve" | "changes";
+            /** @default  */
+            note: string;
         };
     };
     responses: never;
@@ -2099,6 +2604,525 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SkillDetailDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationListDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_markRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MarkReadDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RequestsController_list: {
+        parameters: {
+            query?: {
+                agentId?: string;
+            };
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestSummaryDto"][];
+                };
+            };
+        };
+    };
+    RequestsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDetailDto"];
+                };
+            };
+        };
+    };
+    RequestsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                requestId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDetailDto"];
+                };
+            };
+        };
+    };
+    RequestsController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                requestId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveRequestDto"];
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDetailDto"];
+                };
+            };
+        };
+    };
+    RequestsController_archive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                requestId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RequestsController_changeStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                requestId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestStatusDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDetailDto"];
+                };
+            };
+        };
+    };
+    RequestsController_convert: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                requestId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConvertRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConvertedSkillDto"];
+                };
+            };
+        };
+    };
+    RequestsController_upload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                requestId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                    /** Format: uuid */
+                    requestInputId?: string;
+                };
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileSummaryDto"];
+                };
+            };
+        };
+    };
+    RequestsController_download: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The file */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RequestsController_removeFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CommentsController_list: {
+        parameters: {
+            query: {
+                targetType: "skill" | "request";
+                targetId: string;
+            };
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommentDto"][];
+                };
+            };
+        };
+    };
+    CommentsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCommentDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommentDto"];
+                };
+            };
+        };
+    };
+    CommentsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                commentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CommentsController_edit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                commentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EditCommentDto"];
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommentDto"];
+                };
+            };
+        };
+    };
+    CommentsController_resolve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                commentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommentDto"];
+                };
+            };
+        };
+    };
+    CommentsController_reopen: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                commentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommentDto"];
+                };
+            };
+        };
+    };
+    SignoffsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                skillId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignoffDto"][];
+                };
+            };
+        };
+    };
+    SignoffsController_request: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                skillId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestSignoffDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignoffDto"];
+                };
+            };
+        };
+    };
+    SignoffsController_decide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                signoffId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecideSignoffDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignoffDto"];
+                };
+            };
+        };
+    };
+    SignoffsController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                signoffId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignoffDto"];
                 };
             };
         };

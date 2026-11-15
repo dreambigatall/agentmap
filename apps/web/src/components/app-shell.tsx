@@ -16,6 +16,7 @@ import {
   MenuGroup,
 } from '@/components/ui/menu';
 import { AgentsNav } from '@/features/agents/agents-nav';
+import { NotificationBell } from '@/features/collaboration/notification-bell';
 import { HealthStatus } from '@/features/health/health-status';
 import { api, call } from '@/lib/api/client';
 import { cn } from '@/lib/utils';
@@ -141,7 +142,8 @@ export function AppShell({
           <span className="grid size-7 place-items-center rounded-md bg-primary text-sm font-semibold text-primary-foreground">
             S
           </span>
-          <span className="font-semibold">Skillflow</span>
+          <span className="flex-1 font-semibold">Skillflow</span>
+          <NotificationBell workspaceId={workspace.id} />
         </div>
         <div className="border-b border-border p-2">
           <WorkspaceMenu me={me} workspace={workspace} />
@@ -168,6 +170,7 @@ export function AppShell({
             <div className="min-w-0 flex-1">
               <WorkspaceMenu me={me} workspace={workspace} />
             </div>
+            <NotificationBell workspaceId={workspace.id} />
             <div className="w-40 shrink-0">
               <AccountMenu me={me} />
             </div>

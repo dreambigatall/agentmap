@@ -119,6 +119,12 @@ export class SkillsService {
         },
       });
 
+      // Any sign-off asked for or given on an earlier version no longer counts.
+      await tx.signoff.updateMany({
+        where: { skillId, status: { in: ['pending', 'approved'] } },
+        data: { status: 'outdated' },
+      });
+
       await syncSteps(tx, access.workspaceId, skillId, before, input);
       await syncInputs(tx, access.workspaceId, skillId, before, input);
 
@@ -158,8 +164,10 @@ export class SkillsService {
     const skill = toDetail(await this.load(db, skillId));
     if (skill.status === input.status) return skill;
 
-    // Sign-off arrives in a later phase; until then nothing counts as signed off.
-    const verdict = statusChange(input.status, { ready: isReady(skill), signedOff: false });
+    // In build and Live need a business owner's approval of exactly this version.
+    const signedOff =
+      (await db.signoff.count({ where: { skillId, skillVersion: skill.version, status: 'approved' } })) > 0;
+    const verdict = statusChange(input.status, { ready: isReady(skill), signedOff });
     if (!verdict.allowed) throw new BadRequestException(verdict.reason);
 
     await db.skill.update({ where: { id: skillId }, data: { status: input.status } });

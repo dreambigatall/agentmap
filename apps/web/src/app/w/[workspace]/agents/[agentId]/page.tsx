@@ -12,6 +12,7 @@ import { AppTab, AppTabPanel, AppTabsList, Tabs } from '@/components/ui/tabs';
 import { MenuTrigger } from '@ui-sdk/react/menu';
 import { AgentBadge } from '@/features/agents/agent-badge';
 import { AgentFormDialog } from '@/features/agents/agent-form-dialog';
+import { AgentSections } from '@/features/agents/agent-sections';
 import { NameDialog } from '@/features/agents/name-dialog';
 import { useAgent, useAgentCache } from '@/features/agents/queries';
 import { CapabilityFlowView } from '@/features/flow/capability-flow';
@@ -174,6 +175,8 @@ function AgentView({ workspace, agentId }: { workspace: WorkspaceSummary; agentI
           </Menu>
         )}
       </header>
+
+      <AgentSections slug={workspace.slug} agentId={data.id} current="skills" />
 
       <Tabs value={selected?.id ?? null} onValueChange={(value) => setTab(value as string | null)}>
         <div className="flex items-end gap-2">
