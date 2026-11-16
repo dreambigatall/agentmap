@@ -1,6 +1,7 @@
 'use client';
 
 import { Button as SdkButton } from '@ui-sdk/react/button';
+import Link from 'next/link';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -14,7 +15,12 @@ const variants = {
 const sizes = {
   md: 'h-8 px-3 text-sm',
   sm: 'h-7 px-2.5 text-xs',
+  lg: 'h-10 px-4 text-sm font-medium',
 } as const;
+
+const base =
+  'group inline-flex items-center justify-center gap-2 rounded-md font-normal whitespace-nowrap transition-colors ' +
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
 
 export type ButtonProps = Omit<ComponentProps<typeof SdkButton>, 'children' | 'className'> & {
   variant?: keyof typeof variants;
@@ -41,8 +47,7 @@ export function Button({
   return (
     <SdkButton
       className={cn(
-        'group inline-flex items-center justify-center gap-2 rounded-md font-normal whitespace-nowrap transition-colors',
-        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+        base,
         'disabled:cursor-not-allowed disabled:opacity-60 data-pending:cursor-progress',
         variants[variant],
         sizes[size],
@@ -62,4 +67,14 @@ export function Button({
       {children}
     </SdkButton>
   );
+}
+
+/** A link that looks like a Button, for navigation (a button is for actions). */
+export function ButtonLink({
+  variant = 'primary',
+  size = 'md',
+  className,
+  ...props
+}: ComponentProps<typeof Link> & { variant?: keyof typeof variants; size?: keyof typeof sizes }) {
+  return <Link className={cn(base, variants[variant], sizes[size], className)} {...props} />;
 }
