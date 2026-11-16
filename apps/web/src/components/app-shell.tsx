@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/menu';
 import { AgentsNav } from '@/features/agents/agents-nav';
 import { NotificationBell } from '@/features/collaboration/notification-bell';
+import { SearchButton } from '@/features/sharing/search-dialog';
 import { HealthStatus } from '@/features/health/health-status';
 import { api, call } from '@/lib/api/client';
 import { cn } from '@/lib/utils';
@@ -137,7 +138,7 @@ export function AppShell({
 
   return (
     <div className="flex min-h-screen">
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card md:flex">
+      <aside className="hidden w-64 print:!hidden shrink-0 flex-col border-r border-border bg-card md:flex">
         <div className="flex h-14 items-center gap-2 border-b border-border px-4">
           <span className="grid size-7 place-items-center rounded-md bg-primary text-sm font-semibold text-primary-foreground">
             S
@@ -145,8 +146,9 @@ export function AppShell({
           <span className="flex-1 font-semibold">Skillflow</span>
           <NotificationBell workspaceId={workspace.id} />
         </div>
-        <div className="border-b border-border p-2">
+        <div className="space-y-2 border-b border-border p-2">
           <WorkspaceMenu me={me} workspace={workspace} />
+          <SearchButton workspaceId={workspace.id} workspaceSlug={workspace.slug} />
         </div>
         <nav className="flex-1 space-y-6 p-3 text-sm" aria-label="Workspace">
           <AgentsNav workspace={workspace} />
@@ -165,7 +167,7 @@ export function AppShell({
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="space-y-2 border-b border-border bg-card px-3 py-2 md:hidden">
+        <header className="space-y-2 border-b border-border bg-card px-3 py-2 md:hidden print:hidden">
           <div className="flex items-center gap-2">
             <div className="min-w-0 flex-1">
               <WorkspaceMenu me={me} workspace={workspace} />
@@ -178,6 +180,7 @@ export function AppShell({
           <nav className="flex gap-1 overflow-x-auto text-sm" aria-label="Workspace">
             {nav.map((item) => navLink(item, true))}
           </nav>
+          <SearchButton workspaceId={workspace.id} workspaceSlug={workspace.slug} shortcut={false} />
           <details className="text-sm">
             <summary className="cursor-pointer px-1 py-1 text-muted-foreground">Agents</summary>
             <div className="pt-1">
@@ -185,7 +188,7 @@ export function AppShell({
             </div>
           </details>
         </header>
-        <main className="flex-1 p-4 md:p-8">{children}</main>
+        <main className="flex-1 p-4 md:p-8 print:p-0">{children}</main>
       </div>
     </div>
   );

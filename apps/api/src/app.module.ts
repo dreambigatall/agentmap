@@ -9,6 +9,8 @@ import { ENV, type Env } from './config/env';
 import { AgentsModule } from './modules/agents/agents.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CollaborationModule } from './modules/collaboration/collaboration.module';
+import { OverviewModule } from './modules/overview/overview.module';
+import { SharingModule } from './modules/sharing/sharing.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { RequestsModule } from './modules/requests/requests.module';
 import { SettingsModule } from './modules/settings/settings.module';
@@ -45,6 +47,8 @@ import { PrismaModule } from './prisma/prisma.module';
     NotificationsModule,
     RequestsModule,
     CollaborationModule,
+    SharingModule,
+    OverviewModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

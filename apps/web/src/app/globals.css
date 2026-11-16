@@ -27,7 +27,8 @@
   --agent-violet: oklch(0.54 0.2 300);
 }
 
-@media (prefers-color-scheme: dark) {
+/* Screens only: printed pages always use the light colours. */
+@media screen and (prefers-color-scheme: dark) {
   :root {
     --background: oklch(0.17 0.01 265);
     --foreground: oklch(0.95 0.005 260);

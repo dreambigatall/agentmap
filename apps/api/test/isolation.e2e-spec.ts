@@ -34,6 +34,7 @@ describeDb('workspace isolation', () => {
   let aliceCommentId: string;
   // No sign-off exists yet; the guard must refuse before the id is even looked up.
   const someSignoffId = '5f0c9a52-3c1d-4f7e-9b2a-7d6e5c4b3a21';
+  const someShareId = '8a1d2c3b-4e5f-4a6b-9c7d-0e1f2a3b4c5d';
 
   const ws = () => `/api/w/${aliceWs.id}`;
   const skillBody = () => ({
@@ -134,6 +135,12 @@ describeDb('workspace isolation', () => {
     { method: 'post', path: () => `${ws()}/signoffs/${someSignoffId}/cancel` },
     { method: 'get', path: () => `${ws()}/notifications` },
     { method: 'post', path: () => `${ws()}/notifications/read`, body: () => ({}) },
+    { method: 'get', path: () => `${ws()}/agents/${aliceAgentId}/shares` },
+    { method: 'post', path: () => `${ws()}/agents/${aliceAgentId}/shares` },
+    { method: 'delete', path: () => `${ws()}/shares/${someShareId}` },
+    { method: 'get', path: () => `${ws()}/skills/${aliceSkillId}/export` },
+    { method: 'get', path: () => `${ws()}/dashboard` },
+    { method: 'get', path: () => `${ws()}/search?q=alice` },
   ];
 
   beforeAll(async () => {
@@ -229,6 +236,13 @@ describeDb('workspace isolation', () => {
     await bob.agent.patch(`${own}/comments/${aliceCommentId}`).send({ body: 'Edited' }).expect(404);
     await bob.agent.post(`${own}/comments`).send({ targetType: 'skill', targetId: aliceSkillId, body: 'Hi' }).expect(404);
     await bob.agent.get(`${own}/skills/${aliceSkillId}/signoffs`).expect(404);
+    await bob.agent.post(`${own}/agents/${aliceAgentId}/shares`).expect(404);
+    await bob.agent.get(`${own}/skills/${aliceSkillId}/export`).expect(404);
+    const found = await bob.agent.get(`${own}/search?q=alice`).expect(200);
+    expect(found.body.results).toEqual([]);
+    const board = await bob.agent.get(`${own}/dashboard?agentId=${aliceAgentId}`).expect(200);
+    expect(board.body.counts).toEqual({ draft: 0, defined: 0, in_build: 0, live: 0 });
+    expect(board.body.recent).toEqual([]);
     await bob.agent.post(`${own}/requests`).send({ agentId: aliceAgentId, name: 'Sneaky' }).expect(400);
     await bob.agent.put(`${own}/skills/${aliceSkillId}`).send(skillBody()).expect(404);
     // Creating a skill in Alice's capability from Bob's workspace is refused too.
@@ -300,6 +314,7 @@ describeDb('workspace isolation', () => {
         .replace(aliceFileId, ':fileId')
         .replace(aliceCommentId, ':commentId')
         .replace(someSignoffId, ':signoffId')
+        .replace(someShareId, ':shareId')
         .replace(/\?.*$/, '');
       return `${r.method.toUpperCase()} ${path}`;
     });
