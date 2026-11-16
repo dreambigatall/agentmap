@@ -6,7 +6,7 @@ import { createColorScheme, createLocalStorage } from '@ui-sdk/core';
  * picks the colours from that attribute. Dark is the default look.
  */
 export const colorScheme = createColorScheme({
-  storage: createLocalStorage('skillflow-color-scheme'),
+  storage: createLocalStorage('agentmap-color-scheme'),
   defaultValue: 'dark',
   global: true,
 });

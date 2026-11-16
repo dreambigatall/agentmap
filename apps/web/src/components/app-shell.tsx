@@ -7,6 +7,7 @@ import { usePreference } from '@ui-sdk/react/preferences';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
+import { BRAND_NAME, BrandMark } from '@/components/brand';
 import {
   AppMenuContent,
   AppMenuItem,
@@ -59,12 +60,8 @@ function navFor(slug: string) {
 
 function Logo({ slug }: { slug: string }) {
   return (
-    <Link
-      href={`/w/${slug}`}
-      aria-label="Skillflow home"
-      className="grid size-7 shrink-0 place-items-center rounded-md bg-primary text-[13px] font-semibold text-primary-foreground"
-    >
-      S
+    <Link href={`/w/${slug}`} aria-label={`${BRAND_NAME} home`} className="shrink-0 rounded-md">
+      <BrandMark />
     </Link>
   );
 }

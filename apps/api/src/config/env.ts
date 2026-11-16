@@ -16,11 +16,14 @@ export const envSchema = z.object({
     .string({ required_error: 'DIRECT_URL is missing. Copy apps/api/.env.example to apps/api/.env.' })
     .startsWith('postgres', 'DIRECT_URL must be a postgres:// or postgresql:// connection string'),
   WEB_ORIGIN: z.string().url().default('http://localhost:3000'),
+  // How many proxies sit in front of the API, so rate limits see each visitor's own
+  // address. 1 locally (the Next.js dev proxy); 2 on Render behind Vercel.
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(1),
   JWT_SECRET: z
     .string({ required_error: 'JWT_SECRET is missing. See apps/api/.env.example for how to make one.' })
     .min(32, 'JWT_SECRET must be at least 32 characters'),
   APP_URL: z.string().url().default('http://localhost:3000'),
-  MAIL_FROM: z.string().min(3).default('Skillflow <onboarding@resend.dev>'),
+  MAIL_FROM: z.string().min(3).default('Agentmap <onboarding@resend.dev>'),
   RESEND_API_KEY: z
     .string()
     .optional()

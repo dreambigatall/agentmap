@@ -1,4 +1,4 @@
-// Database schema for Skillflow.
+// Database schema for Agentmap.
 // PostgreSQL hosted on Supabase, used as plain Postgres.
 //
 // All tables live in the "app" schema, set by ?schema=app in the connection strings.

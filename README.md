@@ -1,8 +1,8 @@
-# Skillflow
+# Agentmap
 
 Design, review and sign off the workflows your AI agents follow, before any code is written.
 
-The product requirements and the build plan live in the PRD document (two tabs: PRD and Build plan).
+To put it online (web on Vercel, API on Render), follow [DEPLOY.md](DEPLOY.md).
 
 ## Layout
 

@@ -11,8 +11,8 @@ describe('sharing helpers', () => {
   });
 
   it('makes a safe export file name', () => {
-    expect(exportFileName('Monthly KPI / scoring!')).toBe('monthly-kpi-scoring.skillflow.json');
-    expect(exportFileName('***')).toBe('skill.skillflow.json');
+    expect(exportFileName('Monthly KPI / scoring!')).toBe('monthly-kpi-scoring.agentmap.json');
+    expect(exportFileName('***')).toBe('skill.agentmap.json');
   });
 
   it('needs two characters to search', () => {

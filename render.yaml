@@ -1,0 +1,49 @@
+# Render blueprint for the Agentmap API (apps/api).
+# In Render: New > Blueprint > pick this repository. Fill the values marked sync: false.
+services:
+  - type: web
+    name: agentmap-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    # Build the shared rules first, then the API. Dev tools (Nest CLI, Prisma CLI) are
+    # needed to build, so install them even though NODE_ENV is production.
+    buildCommand: >-
+      corepack enable &&
+      NODE_ENV=development pnpm install --frozen-lockfile &&
+      pnpm --filter @skillflow/shared build &&
+      pnpm --filter @skillflow/api build
+    # Apply any new database migrations, then start. Safe to run on every start.
+    startCommand: >-
+      pnpm --filter @skillflow/api exec prisma migrate deploy &&
+      node apps/api/dist/main.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: '22'
+      - key: API_PORT
+        value: '10000'
+      # Visitors reach the API through Vercel, then Render's own proxy.
+      - key: TRUST_PROXY_HOPS
+        value: '2'
+      - key: JWT_SECRET
+        generateValue: true
+      # Supabase pooler (port 6543), as in apps/api/.env.example.
+      - key: DATABASE_URL
+        sync: false
+      # Supabase direct or session connection (port 5432), used for migrations.
+      - key: DIRECT_URL
+        sync: false
+      # Your Vercel address, e.g. https://agentmap.vercel.app (no trailing slash).
+      - key: APP_URL
+        sync: false
+      - key: WEB_ORIGIN
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_FROM
+        value: Agentmap <onboarding@resend.dev>

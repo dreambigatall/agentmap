@@ -90,8 +90,8 @@ export class InvitesService {
     const link = this.mail.link(`/invite/${token}`);
     await this.mail.send({
       to,
-      subject: `${inviter} invited you to ${workspace} on Skillflow`,
-      text: `${inviter} invited you to join "${workspace}" on Skillflow, where your team designs and signs off the workflows of its AI agents.\n\nAccept the invite:\n${link}\n\nThe link works for 7 days.`,
+      subject: `${inviter} invited you to ${workspace} on Agentmap`,
+      text: `${inviter} invited you to join "${workspace}" on Agentmap, where your team designs and signs off the workflows of its AI agents.\n\nAccept the invite:\n${link}\n\nThe link works for 7 days.`,
       link,
     });
   }
