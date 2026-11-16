@@ -29,6 +29,7 @@ const WORKSPACE_MODELS = new Set<string>([
   Prisma.ModelName.Comment,
   Prisma.ModelName.Signoff,
   Prisma.ModelName.Notification,
+  Prisma.ModelName.ShareLink,
 ]);
 
 const FILTERED_OPERATIONS = new Set([

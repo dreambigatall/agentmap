@@ -836,6 +836,102 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/w/{workspaceId}/agents/{agentId}/shares": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SharingController_list"];
+        put?: never;
+        post: operations["SharingController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/shares/{shareId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["SharingController_revoke"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/skills/{skillId}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SharingController_export"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/share/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PublicShareController_view"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["OverviewController_dashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/w/{workspaceId}/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["OverviewController_search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1457,6 +1553,185 @@ export interface components {
             decision: "approve" | "changes";
             /** @default  */
             note: string;
+        };
+        ShareLinkDto: {
+            /** Format: uuid */
+            id: string;
+            token: string;
+            createdBy: string;
+            createdAt: string;
+            lastViewedAt: string | null;
+        };
+        SkillExportDto: {
+            /** @enum {string} */
+            format: "skillflow.skill/v1";
+            exportedAt: string;
+            skill: {
+                name: string;
+                agent: string;
+                capability: string;
+                /** @enum {string} */
+                status: "draft" | "defined" | "in_build" | "live";
+                version: number;
+                startedBy: string;
+                trigger: string;
+                steps: {
+                    doneBy: string;
+                    text: string;
+                    isApproval: boolean;
+                    ifNo: string;
+                }[];
+                inputs: {
+                    label: string;
+                    /** @enum {string} */
+                    need: "automatic" | "required";
+                }[];
+                channels: {
+                    name: string;
+                    usage: string;
+                }[];
+                deliverable: string;
+                humanControl: string;
+                runsAlongside: boolean;
+            };
+        };
+        PublicAgentDto: {
+            workspaceName: string;
+            agent: {
+                /** Format: uuid */
+                id: string;
+                shortName: string;
+                fullName: string;
+                description: string;
+                /** @enum {string} */
+                color: "indigo" | "teal" | "fuchsia" | "amber" | "emerald" | "rose" | "sky" | "violet";
+            };
+            roles: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            }[];
+            channels: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            }[];
+            capabilities: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                skills: {
+                    name: string;
+                    /** Format: uuid */
+                    startedByRoleId: string | null;
+                    trigger: string;
+                    steps: {
+                        /** Format: uuid */
+                        id: string;
+                        /** Format: uuid */
+                        roleId: string | null;
+                        text: string;
+                        isApproval: boolean;
+                        /** @default  */
+                        ifNo: string;
+                    }[];
+                    inputs: {
+                        /** Format: uuid */
+                        id: string;
+                        label: string;
+                        /** @enum {string} */
+                        need: "automatic" | "required";
+                    }[];
+                    channels: {
+                        /** Format: uuid */
+                        channelId: string;
+                        /** @default  */
+                        usage: string;
+                    }[];
+                    deliverable: string;
+                    humanControl: string;
+                    runsAlongside: boolean;
+                    /** Format: uuid */
+                    id: string;
+                    /** Format: uuid */
+                    capabilityId: string;
+                    capabilityName: string;
+                    /** Format: uuid */
+                    agentId: string;
+                    /** @enum {string} */
+                    status: "draft" | "defined" | "in_build" | "live";
+                    version: number;
+                    updatedAt: string;
+                    updatedBy: string | null;
+                }[];
+            }[];
+        };
+        DashboardDto: {
+            counts: {
+                draft: number;
+                defined: number;
+                in_build: number;
+                live: number;
+            };
+            waitingOnMe: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                skillId: string;
+                skillName: string;
+                /** Format: uuid */
+                agentId: string;
+                askedBy: string;
+                askedAt: string;
+            }[];
+            toReview: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                /** Format: uuid */
+                agentId: string;
+                /** @enum {string} */
+                status: "new" | "in_review" | "approved" | "declined";
+                author: string;
+                updatedAt: string;
+            }[];
+            myRequests: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                /** Format: uuid */
+                agentId: string;
+                /** @enum {string} */
+                status: "new" | "in_review" | "approved" | "declined";
+                author: string;
+                updatedAt: string;
+            }[];
+            recent: {
+                /** @enum {string} */
+                kind: "skill" | "request";
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                agentId: string;
+                title: string;
+                note: string;
+                author: string | null;
+                at: string;
+            }[];
+        };
+        SearchResultsDto: {
+            results: {
+                /** @enum {string} */
+                type: "agent" | "capability" | "skill" | "step" | "request";
+                /** Format: uuid */
+                id: string;
+                title: string;
+                context: string;
+                /** Format: uuid */
+                agentId: string;
+                /** Format: uuid */
+                skillId: string | null;
+            }[];
         };
     };
     responses: never;
@@ -3123,6 +3398,159 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SignoffDto"];
+                };
+            };
+        };
+    };
+    SharingController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                agentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShareLinkDto"][];
+                };
+            };
+        };
+    };
+    SharingController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                agentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShareLinkDto"];
+                };
+            };
+        };
+    };
+    SharingController_revoke: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                shareId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SharingController_export: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+                skillId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillExportDto"];
+                };
+            };
+        };
+    };
+    PublicShareController_view: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicAgentDto"];
+                };
+            };
+        };
+    };
+    OverviewController_dashboard: {
+        parameters: {
+            query?: {
+                agentId?: string;
+            };
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardDto"];
+                };
+            };
+        };
+    };
+    OverviewController_search: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResultsDto"];
                 };
             };
         };

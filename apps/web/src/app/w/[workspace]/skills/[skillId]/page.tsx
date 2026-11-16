@@ -27,6 +27,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { CheckboxField, SwitchField, TextAreaField } from '@/components/ui/controls';
 import { SelectField, TextField } from '@/components/ui/field';
+import { downloadSkill } from '@/features/sharing/queries';
 import { AppMenuContent, AppMenuItem, AppMenuSeparator, Chevron, Menu } from '@/components/ui/menu';
 import { ask, notify } from '@/components/ui/overlays';
 import { AppTab, AppTabPanel, AppTabsList, Tabs } from '@/components/ui/tabs';
@@ -137,6 +138,18 @@ function Header({
   );
 }
 
+async function exportFile(workspaceId: string, skillId: string) {
+  try {
+    await downloadSkill(workspaceId, skillId);
+  } catch (e) {
+    notify.error((e as Error).message);
+  }
+}
+
+function openPrint(slug: string, skillId: string) {
+  window.open(`/w/${slug}/skills/${skillId}/print`, '_blank', 'noopener');
+}
+
 /** "Step 2: Approves the plans…", for choosing which step a comment is about. */
 function stepChoices(skill: SkillDetail) {
   return skill.steps.map((step, i) => ({
@@ -156,9 +169,17 @@ function SkillReadOnly({ skill, workspace, me, agent, roles, channels }: Context
         skill={skill}
         name={skill.name}
         actions={
-          <Button variant="ghost" size="sm" onClick={() => setHistoryOpen(true)}>
-            History
-          </Button>
+          <div className="flex gap-1">
+            <Button variant="ghost" size="sm" onClick={() => void exportFile(workspace.id, skill.id)}>
+              Download JSON
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => openPrint(workspace.slug, skill.id)}>
+              Print / PDF
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setHistoryOpen(true)}>
+              History
+            </Button>
+          </div>
         }
       />
       <Tabs defaultValue="story">
@@ -468,6 +489,8 @@ function SkillEditor({ initial, workspace, me, agent, roles, channels }: Context
           <Menu
             onAction={(value) => {
               if (value === 'history') setHistoryOpen(true);
+              if (value === 'export') void exportFile(workspace.id, saved.id);
+              if (value === 'print') openPrint(workspace.slug, saved.id);
               if (value === 'archive') void archive();
             }}
           >
@@ -483,6 +506,8 @@ function SkillEditor({ initial, workspace, me, agent, roles, channels }: Context
             </MenuTrigger>
             <AppMenuContent className="min-w-40">
               <AppMenuItem value="history">Version history</AppMenuItem>
+              <AppMenuItem value="export">Download as JSON</AppMenuItem>
+              <AppMenuItem value="print">Print or save as PDF</AppMenuItem>
               <AppMenuSeparator />
               <AppMenuItem value="archive" className="text-danger">
                 Archive skill

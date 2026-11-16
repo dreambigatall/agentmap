@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { ShareDialog } from '@/features/sharing/share-dialog';
 import { Card } from '@/components/ui/card';
 import { AppMenuContent, AppMenuItem, AppMenuSeparator, Chevron, Menu } from '@/components/ui/menu';
 import { ask, notify } from '@/components/ui/overlays';
@@ -47,6 +48,7 @@ function AgentView({ workspace, agentId }: { workspace: WorkspaceSummary; agentI
   const canEdit = can(workspace.level, 'content.edit');
   const [tab, setTab] = useState<string | null>(null);
   const [mode, setMode] = useState<'list' | 'flow'>('list');
+  const [shareOpen, setShareOpen] = useState(false);
   const [dialog, setDialog] = useState<null | 'edit' | 'add-capability' | 'rename-capability' | 'new-skill'>(null);
 
   if (agent.isPending) return <p className="text-sm text-muted-foreground">Loading…</p>;
@@ -159,6 +161,7 @@ function AgentView({ workspace, agentId }: { workspace: WorkspaceSummary; agentI
           <Menu
             onAction={(value) => {
               if (value === 'edit') setDialog('edit');
+              if (value === 'share') setShareOpen(true);
               if (value === 'archive') void archiveAgent();
             }}
           >
@@ -167,6 +170,7 @@ function AgentView({ workspace, agentId }: { workspace: WorkspaceSummary; agentI
             </MenuTrigger>
             <AppMenuContent className="min-w-44">
               <AppMenuItem value="edit">Edit agent</AppMenuItem>
+              <AppMenuItem value="share">Share a read-only link</AppMenuItem>
               <AppMenuSeparator />
               <AppMenuItem value="archive" className="text-danger">
                 Archive agent
@@ -175,6 +179,14 @@ function AgentView({ workspace, agentId }: { workspace: WorkspaceSummary; agentI
           </Menu>
         )}
       </header>
+
+      <ShareDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        workspaceId={workspace.id}
+        agentId={data.id}
+        agentName={data.fullName}
+      />
 
       <AgentSections slug={workspace.slug} agentId={data.id} current="skills" />
 

@@ -7,3 +7,4 @@ export * from './skills';
 export * from './flow';
 export * from './requests';
 export * from './collaboration';
+export * from './sharing';

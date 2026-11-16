@@ -22,7 +22,7 @@ import { PrismaService, type WorkspaceDb, TX_OPTIONS } from '../../prisma/prisma
 
 const LIVE = { archivedAt: null } as const;
 
-const DETAIL_INCLUDE = {
+export const DETAIL_INCLUDE = {
   capability: { select: { name: true, agentId: true } },
   steps: { orderBy: { position: 'asc' } },
   inputs: { orderBy: { position: 'asc' } },
