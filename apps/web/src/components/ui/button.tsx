@@ -5,15 +5,15 @@ import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 const variants = {
-  primary: 'bg-primary text-primary-foreground hover:opacity-90',
-  secondary: 'border border-border bg-card hover:bg-muted',
-  ghost: 'hover:bg-muted',
-  danger: 'border border-border bg-card text-danger hover:bg-danger/10',
+  primary: 'border border-primary/50 bg-primary-solid text-white hover:border-primary hover:bg-primary-solid/85',
+  secondary: 'border border-border-strong bg-muted/60 text-foreground hover:border-muted-foreground/50 hover:bg-muted',
+  ghost: 'text-foreground hover:bg-muted',
+  danger: 'border border-danger/40 bg-danger/10 text-danger hover:bg-danger/20',
 } as const;
 
 const sizes = {
-  md: 'h-9 px-4 text-sm',
-  sm: 'h-8 px-3 text-xs',
+  md: 'h-8 px-3 text-sm',
+  sm: 'h-7 px-2.5 text-xs',
 } as const;
 
 export type ButtonProps = Omit<ComponentProps<typeof SdkButton>, 'children' | 'className'> & {
@@ -41,7 +41,7 @@ export function Button({
   return (
     <SdkButton
       className={cn(
-        'group inline-flex items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap transition-colors',
+        'group inline-flex items-center justify-center gap-2 rounded-md font-normal whitespace-nowrap transition-colors',
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
         'disabled:cursor-not-allowed disabled:opacity-60 data-pending:cursor-progress',
         variants[variant],

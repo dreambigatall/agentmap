@@ -29,10 +29,10 @@ export function AppDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={(next) => onOpenChange(next)}>
-      <DialogBackdrop className="fixed inset-0 z-[70] bg-black/40 transition-opacity data-ending-style:opacity-0 data-starting-style:opacity-0" />
-      <DialogContent className="fixed top-1/2 left-1/2 z-[71] max-h-[calc(100vh-32px)] w-[min(480px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-border bg-card p-6 shadow-xl transition data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+      <DialogBackdrop className="fixed inset-0 z-[70] bg-black/60 transition-opacity data-ending-style:opacity-0 data-starting-style:opacity-0" />
+      <DialogContent className="fixed top-1/2 left-1/2 z-[71] max-h-[calc(100vh-32px)] w-[min(480px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-md border border-border-strong bg-card p-5 shadow-2xl shadow-black/50 transition data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
         <div className="mb-5 space-y-1 pr-8">
-          <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>
+          <DialogTitle className="text-base font-medium">{title}</DialogTitle>
           {description && <DialogDescription className="text-sm text-muted-foreground">{description}</DialogDescription>}
         </div>
         <DialogClose

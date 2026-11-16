@@ -21,11 +21,14 @@ export function SearchButton({
   workspaceId,
   workspaceSlug,
   shortcut = true,
+  compact = false,
 }: {
   workspaceId: string;
   workspaceSlug: string;
   /** The shell shows two buttons (desktop and phone); only one registers the shortcut. */
   shortcut?: boolean;
+  /** Icon only, for narrow top bars. */
+  compact?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   useShortcut(shortcut ? 'mod+k' : null, () => setOpen(true), { description: 'Search' });
@@ -37,16 +40,25 @@ export function SearchButton({
         type="button"
         onClick={() => setOpen(true)}
         aria-keyshortcuts={hint.ariaKeyshortcuts}
-        className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted"
+        aria-label={compact ? 'Search' : undefined}
+        className={
+          compact
+            ? 'grid size-8 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground'
+            : 'flex h-8 w-full items-center gap-2 rounded-md border border-border-strong bg-input px-2 text-sm text-muted-foreground hover:border-muted-foreground/50'
+        }
       >
         <svg aria-hidden viewBox="0 0 16 16" className="size-4" fill="none">
           <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
           <path d="m10.5 10.5 3 3" stroke="currentColor" strokeWidth="1.5" />
         </svg>
-        <span className="flex-1 text-left">Search</span>
-        <kbd aria-hidden className="rounded border border-border px-1 text-[11px]">
-          {hint.text}
-        </kbd>
+        {!compact && (
+          <>
+            <span className="flex-1 text-left">Search…</span>
+            <kbd aria-hidden className="rounded-sm border border-border-strong px-1 font-mono text-[10px]">
+              {hint.text}
+            </kbd>
+          </>
+        )}
       </button>
       {open && (
         <SearchDialog
