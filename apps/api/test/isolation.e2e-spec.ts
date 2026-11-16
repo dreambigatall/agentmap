@@ -135,6 +135,7 @@ describeDb('workspace isolation', () => {
     { method: 'post', path: () => `${ws()}/signoffs/${someSignoffId}/cancel` },
     { method: 'get', path: () => `${ws()}/notifications` },
     { method: 'post', path: () => `${ws()}/notifications/read`, body: () => ({}) },
+    { method: 'post', path: () => `${ws()}/agents/from-template`, body: () => ({ key: 'finance' }) },
     { method: 'get', path: () => `${ws()}/agents/${aliceAgentId}/shares` },
     { method: 'post', path: () => `${ws()}/agents/${aliceAgentId}/shares` },
     { method: 'delete', path: () => `${ws()}/shares/${someShareId}` },
