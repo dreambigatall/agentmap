@@ -20,7 +20,7 @@ export function Alert({
   return (
     <div
       role={tone === 'error' ? 'alert' : 'status'}
-      className={cn('rounded-lg border px-3 py-2.5 text-sm', tones[tone], className)}
+      className={cn('rounded-md border px-3 py-2.5 text-sm', tones[tone], className)}
     >
       {children}
     </div>

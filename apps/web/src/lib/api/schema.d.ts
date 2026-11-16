@@ -404,6 +404,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/w/{workspaceId}/agents/from-template": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AgentsController_fromTemplate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/w/{workspaceId}/agents/{agentId}": {
         parameters: {
             query?: never;
@@ -1103,6 +1119,9 @@ export interface components {
                 }[];
             }[];
         };
+        ApplyTemplateDto: {
+            key: string;
+        };
         UpdateAgentDto: {
             shortName?: string;
             fullName?: string;
@@ -1667,6 +1686,13 @@ export interface components {
             }[];
         };
         DashboardDto: {
+            setup: {
+                hasAgent: boolean;
+                hasSkill: boolean;
+                hasTeammate: boolean;
+                hasSignoff: boolean;
+                hasShare: boolean;
+            };
             counts: {
                 draft: number;
                 defined: number;
@@ -2464,6 +2490,31 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["AgentInputDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentDetailDto"];
+                };
+            };
+        };
+    };
+    AgentsController_fromTemplate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplyTemplateDto"];
             };
         };
         responses: {

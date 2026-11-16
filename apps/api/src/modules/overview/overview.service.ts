@@ -69,6 +69,22 @@ export class OverviewService {
       }),
     ]);
 
+    const [agentCount, skillCount, memberCount, inviteCount, signoffCount, shareCount] = await Promise.all([
+      db.agent.count({ where: LIVE }),
+      db.skill.count({ where: { ...LIVE, capability: { ...LIVE, agent: LIVE } } }),
+      db.membership.count(),
+      db.invite.count(),
+      db.signoff.count(),
+      db.shareLink.count(),
+    ]);
+    const setup = {
+      hasAgent: agentCount > 0,
+      hasSkill: skillCount > 0,
+      hasTeammate: memberCount > 1 || inviteCount > 0,
+      hasSignoff: signoffCount > 0,
+      hasShare: shareCount > 0,
+    };
+
     const counts = { draft: 0, defined: 0, in_build: 0, live: 0 };
     for (const row of byStatus) counts[row.status] = row._count._all;
 
@@ -106,6 +122,7 @@ export class OverviewService {
       .map((item) => ({ ...item, at: item.at.toISOString() }));
 
     return {
+      setup,
       counts,
       waitingOnMe: waiting.map((s) => ({
         id: s.id,

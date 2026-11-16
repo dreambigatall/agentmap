@@ -19,11 +19,11 @@ import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 const controlClass =
-  'h-9 w-full rounded-lg border border-border bg-card px-3 text-sm outline-none transition-colors ' +
+  'h-8 w-full rounded-md border border-border-strong bg-input px-3 text-sm outline-none transition-colors ' +
   'placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 ' +
   'data-invalid:border-danger [&:read-only:not(button)]:bg-muted [&:read-only:not(button)]:text-muted-foreground disabled:opacity-60';
 
-const labelClass = 'block text-sm font-medium';
+const labelClass = 'block text-sm text-muted-foreground';
 
 interface FieldParts {
   label: string;
@@ -101,7 +101,7 @@ export function PasswordField({
         <PasswordInputControl className={cn(controlClass, 'pr-10')} />
         <PasswordInputToggle
           aria-label="Show password"
-          className="absolute inset-y-0 right-0 grid w-10 place-items-center rounded-r-lg text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-primary"
+          className="absolute inset-y-0 right-0 grid w-10 place-items-center rounded-r-md text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-primary"
         >
           {(state) => <EyeIcon open={!state.visible} />}
         </PasswordInputToggle>
@@ -161,13 +161,13 @@ export function SelectField<V extends string>({
         </SelectTrigger>
         <SelectContent
           sideOffset={4}
-          className="z-50 min-w-(--anchor-width) max-h-(--available-height) overflow-y-auto rounded-lg border border-border bg-card p-1 shadow-lg outline-none"
+          className="z-50 min-w-(--anchor-width) max-h-(--available-height) overflow-y-auto rounded-md border border-border-strong bg-card p-1 shadow-xl shadow-black/40 outline-none"
         >
           {items.map((item) => (
             <SelectItem
               key={item.value}
               value={item.value}
-              className="flex cursor-default items-start gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-highlighted:bg-muted"
+              className="flex cursor-default items-start gap-2 rounded-sm px-2 py-1.5 text-sm outline-none data-highlighted:bg-muted"
             >
               <span className="min-w-0 flex-1">
                 <span className="block">{item.label}</span>

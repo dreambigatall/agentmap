@@ -8,7 +8,7 @@ import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 const controlClass =
-  'w-full rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none transition-colors ' +
+  'w-full rounded-md border border-border-strong bg-input px-3 py-2 text-sm outline-none transition-colors ' +
   'placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 ' +
   'data-invalid:border-danger disabled:opacity-60';
 
@@ -30,7 +30,7 @@ export function TextAreaField({
 } & Omit<ComponentProps<typeof Textarea>, 'className'>) {
   return (
     <Field name={name} invalid={error ? true : undefined} className={cn('space-y-1.5', className)}>
-      <FieldLabel className={cn('block text-sm font-medium', hideLabel && 'sr-only')}>{label}</FieldLabel>
+      <FieldLabel className={cn('block text-sm text-muted-foreground', hideLabel && 'sr-only')}>{label}</FieldLabel>
       <Textarea name={name} rows={2} className={cn(controlClass, 'resize-y')} {...textarea} />
       {hint && !error && <FieldDescription className="text-xs text-muted-foreground">{hint}</FieldDescription>}
       {error && (
@@ -65,7 +65,7 @@ export function CheckboxField({
         disabled={disabled}
         onCheckedChange={(next) => onCheckedChange(next === true)}
         className={cn(
-          'mt-0.5 grid size-4 shrink-0 place-items-center rounded border border-border bg-card outline-none',
+          'mt-0.5 grid size-4 shrink-0 place-items-center rounded-sm border border-border-strong bg-input outline-none',
           'focus-visible:ring-2 focus-visible:ring-primary/40 data-checked:border-primary data-checked:bg-primary',
         )}
       >
@@ -100,16 +100,16 @@ export function SwitchField({
   return (
     <Field className="flex items-start justify-between gap-4">
       <div className="min-w-0">
-        <FieldLabel className="text-sm font-medium">{label}</FieldLabel>
+        <FieldLabel className="text-sm">{label}</FieldLabel>
         {description && <FieldDescription className="text-xs text-muted-foreground">{description}</FieldDescription>}
       </div>
       <Switch
         checked={checked}
         disabled={disabled}
         onCheckedChange={(next) => onCheckedChange(next === true)}
-        className="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-border p-0.5 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/40 data-checked:bg-primary"
+        className="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-border-strong p-0.5 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/40 data-checked:bg-primary"
       >
-        <SwitchThumb className="size-4 rounded-full bg-card shadow transition-transform data-checked:translate-x-4" />
+        <SwitchThumb className="size-4 rounded-full bg-foreground shadow transition-transform data-checked:translate-x-4" />
       </Switch>
     </Field>
   );

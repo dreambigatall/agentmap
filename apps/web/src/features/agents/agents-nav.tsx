@@ -22,7 +22,7 @@ export function AgentsNav({ workspace, onNavigate }: { workspace: WorkspaceSumma
   return (
     <div>
       <div className="mb-1 flex items-center justify-between px-2">
-        <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Agents</p>
+        <p className="font-mono text-[11px] tracking-wider text-muted-foreground uppercase">All agents</p>
         {canEdit && (
           <button
             type="button"
@@ -63,7 +63,7 @@ export function AgentsNav({ workspace, onNavigate }: { workspace: WorkspaceSumma
                 aria-current={active ? 'page' : undefined}
                 className={cn(
                   'flex items-center gap-2 rounded-md px-2 py-1.5',
-                  active ? 'bg-muted font-medium text-foreground' : 'text-muted-foreground hover:bg-muted',
+                  active ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                 )}
               >
                 <AgentBadge shortName={agent.shortName} color={agent.color} />
@@ -76,6 +76,14 @@ export function AgentsNav({ workspace, onNavigate }: { workspace: WorkspaceSumma
           );
         })}
       </ul>
+      {canEdit && (
+        <Link
+          href={`/w/${workspace.slug}/templates`}
+          className="mt-1 block rounded-md px-2 py-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+        >
+          + From a template
+        </Link>
+      )}
 
       {creating && (
         <AgentFormDialog

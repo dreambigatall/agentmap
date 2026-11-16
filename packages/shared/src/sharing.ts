@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { AGENT_COLORS, skillStatusSchema } from './agents';
 import { INPUT_NEEDS, skillDetailSchema } from './skills';
 import { REQUEST_STATUSES } from './requests';
+import { setupProgressSchema } from './templates';
 
 const uuid = z.string().uuid();
 
@@ -97,6 +98,8 @@ const dashboardRequest = z.object({
 });
 
 export const dashboardSchema = z.object({
+  /** Workspace-wide first steps, for the setup checklist. Not filtered by agent. */
+  setup: setupProgressSchema,
   counts: z.object({
     draft: z.number().int(),
     defined: z.number().int(),

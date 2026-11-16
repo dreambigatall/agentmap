@@ -29,7 +29,7 @@ export default function OnboardingPage() {
     try {
       const workspace = await call<WorkspaceSummary>(api.POST('/api/workspaces', { body: parsed.data }));
       await client.invalidateQueries({ queryKey: ME_KEY });
-      router.replace(`/w/${workspace.slug}`);
+      router.replace(`/w/${workspace.slug}/templates?welcome=1`);
     } catch (e) {
       setError((e as Error).message);
       setPending(false);

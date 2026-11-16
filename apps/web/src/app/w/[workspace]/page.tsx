@@ -54,17 +54,44 @@ export default function DashboardPage() {
 
   const agentById = new Map((agents.data ?? []).map((a) => [a.id, a]));
   const firstAgent = agents.data?.[0];
-  const steps = [
-    { done: true, label: 'Create your workspace' },
-    { done: me.data.emailVerified, label: 'Confirm your email address' },
-    {
-      done: (firstAgent?.skillCount ?? 0) > 0,
-      label: firstAgent ? `Describe ${firstAgent.fullName}’s first skill` : 'Add your first agent with + next to Agents',
-      href: firstAgent ? `/w/${slug}/agents/${firstAgent.id}` : undefined,
-      action: 'content.edit' as const,
-    },
-  ];
-  const showSteps = steps.some((s) => !s.done);
+  const setup = board.data?.setup;
+  const steps = setup
+    ? [
+        { done: me.data.emailVerified, label: 'Confirm your email address' },
+        {
+          done: setup.hasAgent,
+          label: 'Add your first agent, or start from a template',
+          href: `/w/${slug}/templates`,
+          action: 'content.edit' as const,
+        },
+        {
+          done: setup.hasSkill,
+          label: firstAgent ? `Describe ${firstAgent.fullName}’s first skill` : 'Describe your first skill',
+          href: firstAgent ? `/w/${slug}/agents/${firstAgent.id}` : undefined,
+          action: 'content.edit' as const,
+        },
+        {
+          done: setup.hasTeammate,
+          label: 'Invite a teammate to review',
+          href: `/w/${slug}/settings/members`,
+          action: 'members.manage' as const,
+        },
+        {
+          done: setup.hasSignoff,
+          label: 'Ask a business owner to sign off a skill',
+          href: firstAgent ? `/w/${slug}/agents/${firstAgent.id}` : undefined,
+          action: 'content.edit' as const,
+        },
+        {
+          done: setup.hasShare,
+          label: 'Share an agent with a read-only link',
+          href: firstAgent ? `/w/${slug}/agents/${firstAgent.id}` : undefined,
+          action: 'content.edit' as const,
+        },
+      ]
+    : [];
+  const doneCount = steps.filter((s) => s.done).length;
+  const showSteps = steps.length > 0 && doneCount < steps.length;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -75,7 +102,22 @@ export default function DashboardPage() {
 
       {showSteps && (
         <Card className="p-5">
-          <h2 className="mb-4 font-semibold">First steps</h2>
+          <div className="mb-4 flex items-baseline justify-between gap-3">
+            <h2 className="font-semibold">Set up your workspace</h2>
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {doneCount} of {steps.length} done
+            </span>
+          </div>
+          <div
+            role="progressbar"
+            aria-label="Setup progress"
+            aria-valuemin={0}
+            aria-valuemax={steps.length}
+            aria-valuenow={doneCount}
+            className="mb-4 h-1.5 overflow-hidden rounded-full bg-muted"
+          >
+            <div className="h-full rounded-full bg-success" style={{ width: `${(doneCount / steps.length) * 100}%` }} />
+          </div>
           <ol className="space-y-3">
             {steps.map((step) => (
               <li key={step.label} className="flex items-center gap-3 text-sm">
@@ -90,7 +132,7 @@ export default function DashboardPage() {
                   {step.done ? '✓' : ''}
                 </span>
                 <span className={step.done ? 'text-muted-foreground line-through' : ''}>
-                  {step.href && step.action ? (
+                  {!step.done && step.href && step.action ? (
                     <Can level={workspace.level} action={step.action} fallback={step.label}>
                       <Link href={step.href} className="font-medium text-primary hover:underline">
                         {step.label}

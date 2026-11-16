@@ -20,9 +20,9 @@ export function AppTab({ className, ...props }: ComponentProps<typeof TabsTab>) 
   return (
     <TabsTab
       className={cn(
-        '-mb-px shrink-0 border-b-2 border-transparent px-3 py-2 text-sm whitespace-nowrap text-muted-foreground outline-none',
+        '-mb-px shrink-0 border-b-2 border-transparent px-2.5 py-2 text-sm whitespace-nowrap text-muted-foreground outline-none',
         'hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary/40',
-        'data-selected:border-primary data-selected:font-medium data-selected:text-foreground',
+        'data-selected:border-foreground data-selected:text-foreground',
         className,
       )}
       {...props}
