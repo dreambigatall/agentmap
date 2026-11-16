@@ -12,10 +12,18 @@ export function middleware(request: NextRequest) {
   const signedIn = request.cookies.has(SESSION_COOKIE);
   const { pathname, search } = request.nextUrl;
 
+  // The home page is public: signed-out visitors see it, everyone else goes to their workspace.
+  if (pathname === '/') {
+    if (!signedIn) return NextResponse.next();
+    const url = request.nextUrl.clone();
+    url.pathname = '/w';
+    return NextResponse.redirect(url);
+  }
+
   if (!signedIn) {
     const url = request.nextUrl.clone();
     url.pathname = '/sign-in';
-    url.search = pathname === '/' || pathname === '/w' ? '' : `?next=${encodeURIComponent(pathname + search)}`;
+    url.search = pathname === '/w' ? '' : `?next=${encodeURIComponent(pathname + search)}`;
     return NextResponse.redirect(url);
   }
   return NextResponse.next();
