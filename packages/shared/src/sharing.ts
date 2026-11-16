@@ -47,7 +47,7 @@ export type PublicAgent = z.infer<typeof publicAgentSchema>;
 
 // ------------------------------------------------------------- export
 
-export const SKILL_EXPORT_FORMAT = 'skillflow.skill/v1';
+export const SKILL_EXPORT_FORMAT = 'agentmap.skill/v1';
 
 /** A skill as a portable file. Roles and channels are names, so it reads on its own. */
 export const skillExportSchema = z.object({
@@ -80,7 +80,7 @@ export function exportFileName(name: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 60);
-  return `${base || 'skill'}.skillflow.json`;
+  return `${base || 'skill'}.agentmap.json`;
 }
 
 // ------------------------------------------------------------- dashboard

@@ -109,7 +109,7 @@ export class AuthService {
     const link = this.mail.link(`/verify-email?token=${token}`);
     await this.mail.send({
       to: user.email,
-      subject: 'Confirm your email for Skillflow',
+      subject: 'Confirm your email for Agentmap',
       text: `Hi ${user.name},\n\nConfirm your email address to start inviting your team:\n${link}\n\nThe link works for 48 hours.`,
       link,
     });
@@ -132,7 +132,7 @@ export class AuthService {
     const link = this.mail.link(`/reset-password?token=${token}`);
     await this.mail.send({
       to: user.email,
-      subject: 'Reset your Skillflow password',
+      subject: 'Reset your Agentmap password',
       text: `Hi ${user.name},\n\nUse this link to choose a new password:\n${link}\n\nThe link works for 1 hour. If you did not ask for this, ignore this email.`,
       link,
     });

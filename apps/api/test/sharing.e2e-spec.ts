@@ -112,8 +112,8 @@ describeDb('sharing, export, dashboard and search', () => {
 
   it('exports a skill as a file with role and channel names', async () => {
     const res = await reviewer.agent.get(`${base}/skills/${skill.id}/export`).expect(200);
-    expect(res.headers['content-disposition']).toBe('attachment; filename="invoice-matching.skillflow.json"');
-    expect(res.body.format).toBe('skillflow.skill/v1');
+    expect(res.headers['content-disposition']).toBe('attachment; filename="invoice-matching.agentmap.json"');
+    expect(res.body.format).toBe('agentmap.skill/v1');
     expect(res.body.skill.steps.map((s: { doneBy: string }) => s.doneBy)).toEqual(['FIN', roles[0].name]);
     expect(res.body.skill.channels[0]).toEqual({ name: expect.any(String), usage: 'Sends the summary' });
   });

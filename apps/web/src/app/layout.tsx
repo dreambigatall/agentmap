@@ -6,7 +6,7 @@ import { Providers } from './providers';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Skillflow',
+  title: 'Agentmap',
   description: 'Design, review and sign off the workflows your AI agents follow.',
 };
 

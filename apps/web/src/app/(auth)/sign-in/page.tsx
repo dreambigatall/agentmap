@@ -64,7 +64,7 @@ function SignInForm() {
         </Button>
       </form>
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        New to Skillflow?{' '}
+        New to Agentmap?{' '}
         <Link
           href={params.get('next') ? `/sign-up?next=${encodeURIComponent(params.get('next')!)}` : '/sign-up'}
           className="font-medium text-primary hover:underline"

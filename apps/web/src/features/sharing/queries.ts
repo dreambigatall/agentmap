@@ -53,7 +53,7 @@ export function shareUrl(token: string): string {
   return `${window.location.origin}/share/${token}`;
 }
 
-/** Downloads a skill as a .skillflow.json file. */
+/** Downloads a skill as a .agentmap.json file. */
 export async function downloadSkill(workspaceId: string, skillId: string): Promise<void> {
   const file = await call<SkillExport>(
     api.GET('/api/w/{workspaceId}/skills/{skillId}/export', { params: { path: { workspaceId, skillId } } }),

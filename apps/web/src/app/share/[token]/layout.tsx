@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 export const metadata: Metadata = {
-  title: 'Shared agent · Skillflow',
+  title: 'Shared agent · Agentmap',
   robots: { index: false, follow: false },
   referrer: 'no-referrer',
 };

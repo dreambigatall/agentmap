@@ -39,7 +39,7 @@ function Verify() {
         <Alert tone="error">{message}</Alert>
       )}
       <Link href="/w" className="block text-center text-sm font-medium text-primary hover:underline">
-        Go to Skillflow
+        Go to Agentmap
       </Link>
     </div>
   );

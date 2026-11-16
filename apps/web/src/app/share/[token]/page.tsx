@@ -4,6 +4,7 @@ import { STATUS_LABEL, type NamedItem, type PublicAgent } from '@skillflow/share
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
+import { BRAND_NAME, BrandMark } from '@/components/brand';
 import { Card } from '@/components/ui/card';
 import { AppTab, AppTabPanel, AppTabsList, Tabs } from '@/components/ui/tabs';
 import { AgentBadge } from '@/features/agents/agent-badge';
@@ -41,10 +42,8 @@ function Frame({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-4">
-          <span className="grid size-7 place-items-center rounded-md bg-primary text-sm font-semibold text-primary-foreground">
-            S
-          </span>
-          <span className="font-semibold">Skillflow</span>
+          <BrandMark />
+          <span className="font-medium">{BRAND_NAME}</span>
           <span className="ml-auto text-xs text-muted-foreground">Read-only shared view</span>
         </div>
       </header>
